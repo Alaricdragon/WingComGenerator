@@ -1,6 +1,7 @@
 package main.threads;
 
 import main.Seeker;
+import main.processers.MultiGetArray;
 import main.types.HullJson;
 
 import java.util.ArrayList;
@@ -8,8 +9,8 @@ import java.util.ArrayList;
 public class SeekHullsJsons implements Runnable{
     private String mod;
     private String path;
-    private ArrayList<String> seekingIds;
-    public SeekHullsJsons(String mod, String path, ArrayList<String> seekingIds){
+    private MultiGetArray<String> seekingIds;
+    public SeekHullsJsons(String mod, String path, MultiGetArray<String> seekingIds){
         this.mod = mod;
         this.path = path;
         this.seekingIds = seekingIds;

@@ -105,9 +105,12 @@ public class Process_FactionData implements Runnable{
             1) merge all the 'to add' fighters together. (can I use MergeListMaster here? maybe...)
             -) no need to worry about overwriting here. they are all merged anyways, not overwriten like others.
          */
-        //NOTE: unlike other things, faction jsons are added together, effectivly. so I dont really need this step? that or I just merge all the lists.
+        //NOTE: unlike other things, faction jsons are added together, effectively. so I dont really need this step? that or I just merge all the lists.
     }
-    public void findFactionFighters(){
+    public void findFactionFighters() throws InterruptedException {
+        while (!Seeker.finishedGettingCoreData()){//this holds this part of the program here, until I have fully gotten the relevant data.
+            Thread.sleep(100);
+        }
         /* todo:
             1) create 1 Organize_ per faction.
             2) wait for this to finish

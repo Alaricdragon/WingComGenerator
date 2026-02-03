@@ -1,0 +1,30 @@
+{
+  "buildRestricted": "false",
+  #built in hull mods added to all ships
+  "baseBuiltInHullMods": [],
+  #additional hullmosd to diffrent manufactuers.
+  "manufactureModifications": {
+    "Remnant": {
+      #build in hullmods into this manufactuer (if they dont already exsist)
+      "BuiltInHullMods": [
+        "automated"
+      ]
+    },
+    "Threat": {
+      "BuiltInHullMods": [
+        "automated"
+      ]
+    },
+    "Explorarium": {
+      "BuiltInHullMods": [
+        "automated"
+      ]
+    }
+  },
+  #forcefully prevent fighters inside of this block from being created
+  "forceExclude": [
+
+  ],
+  #forcefully allow fighters inside of this block to be created
+  "ignoreRestrictedStatus": []
+}

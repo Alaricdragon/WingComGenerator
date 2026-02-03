@@ -1,5 +1,7 @@
 package main.types;
 
+import org.json.simple.JSONObject;
+
 import java.util.ArrayList;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -35,5 +37,5 @@ public class ModStorge {
     public ArrayList<Hull> hulls = new ArrayList<>();
     public ArrayList<Variant> variants = new ArrayList<>();
     public ArrayList<HullJson> hullJsons = new ArrayList<>();
-
+    public JSONObject factionSettings = null;
 }

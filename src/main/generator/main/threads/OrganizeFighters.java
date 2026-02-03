@@ -16,6 +16,8 @@ public class OrganizeFighters implements Runnable{
     }
     @Override
     public void run() {
+        //todo: make it so restricted fighters (that are not exscluded from being restrected) are not added.
+        //todo: make it so 'forceExclude' fighters are not added.
         ArrayList<Fighter> out = list;
         boolean build;
         for (Fighter a : list2){

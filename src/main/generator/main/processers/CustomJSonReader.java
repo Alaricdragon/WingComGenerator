@@ -1,5 +1,6 @@
 package main.processers;
 
+import main.settings.ManufacturerSettings;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -9,6 +10,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 
 public class CustomJSonReader {
     private static StringBuilder removeInvalidLines(String path){
@@ -24,17 +26,31 @@ public class CustomJSonReader {
                 linet = line.trim();
                 if (!linet.startsWith("#")) {
                     line2 = linet.split("#");
-                    jsonContent.append(line2[0]).append("\n");
-                }else {
-                    //System.out.println(line.trim());
+                    jsonContent.append(changeDashes(line2[0])).append("\n");
+                    continue;
                 }
             }
         } catch (IOException e) {
             System.err.println("Error reading file: " + e.getMessage());
             return null;
         }
-
+        //System.out.println(jsonContent);
         return jsonContent;
+    }
+    private static String changeDashes(String str){
+        StringBuilder builder = new StringBuilder();
+        boolean insideItem = false;
+        for (int a = 0; a < str.length(); a++){
+            char b = str.charAt(a);
+            if (b == '"') insideItem = !insideItem;
+            if (!insideItem && b == '\'') b = '"';
+            builder.append(b);
+        }
+        return builder.toString();
+        /*char a = '\'';
+        char b = '"';
+        return str.replace(a,b);*/
+        //return str;
     }
     public static JSONArray getArray(String path) throws ParseException {
         StringBuilder string = removeInvalidLines(path);
@@ -47,5 +63,14 @@ public class CustomJSonReader {
         JSONParser parser = new JSONParser();
         Object obj = parser.parse(string.toString());
         return (JSONObject) obj;
+    }
+    public static String[] getItemsInArray(JSONArray array){
+        String[] out = new String[array.size()];
+        int d = 0;
+        for (Object b : array){
+            out[d] = b.toString();
+            d++;
+        }
+        return out;
     }
 }
