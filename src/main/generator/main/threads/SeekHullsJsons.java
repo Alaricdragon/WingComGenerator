@@ -1,30 +1,74 @@
 package main.threads;
 
 import main.Seeker;
+import main.processers.CustomJSonReader;
 import main.processers.MultiGetArray;
 import main.types.HullJson;
+import main.types.Variant;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class SeekHullsJsons implements Runnable{
     private String mod;
     private String path;
     private MultiGetArray<String> seekingIds;
+    int priority;
     public SeekHullsJsons(String mod, String path, MultiGetArray<String> seekingIds){
         this.mod = mod;
         this.path = path;
         this.seekingIds = seekingIds;
+        priority = Seeker.getModStorge(mod).order;
     }
     @Override
     public void run() {
-        /*todo:
-            1) I take the path, and I look at every variant inside of said mods variant folder
-            2) I store any variants with a matching 'id' to any seekingIds into a array
-            3) then I set it to be remembered. (into the inputed ModStorge)
-         */
-        //WARNING: I do not yet have a class to store relevant hull data. in theory, I could add them to the relevant variants.
         ArrayList<HullJson> out = new ArrayList<>();
-        //todo: process all Variants here.
+        paths.add(path+"/data/hulls");
+        while (!paths.isEmpty()) {
+            getFolder(paths.getFirst());
+        }
+        int check = seekingIds.getAndReserveListID();
+        ArrayList<String> list = seekingIds.getList(check);
+        while (!filePaths.isEmpty()){
+            HullJson b = checkHulls(filePaths.getFirst(),list);
+            if (b != null) out.add(b);
+        }
+        seekingIds.unlockList(check);
         Seeker.addHullJsons(mod,out);
     }
+    private ArrayList<String> paths = new ArrayList<>();
+    private ArrayList<String> filePaths = new ArrayList<>();
+    private void getFolder(String path){
+        paths.removeFirst();
+        File folder;
+        try {
+            folder = new File(path);
+        } catch (Exception e) {
+            return;
+        }
+        File[] fileList = folder.listFiles();
+        if (fileList == null) return;
+        for( File file : fileList ){
+            String filename = file.getName();
+            if (filename.endsWith(".ship")){
+                filePaths.add(path+"/"+file.getName());
+            }else{
+                paths.add(path+"/"+file.getName());
+            }
+        }
+    }
+    private HullJson checkHulls(String path, ArrayList<String> list){
+        filePaths.removeFirst();
+        try {
+            JSONObject json = CustomJSonReader.getObject(path);
+            String id = json.get("hullId").toString();
+            if (list.contains(id)) return new HullJson(json,priority);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
+    }
+
 }

@@ -1,7 +1,5 @@
 package main.settings;
 
-import org.json.simple.JSONObject;
-
 import java.util.ArrayList;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -15,7 +13,7 @@ public class Settings {
     public static ReentrantLock forceExclude_lock = new ReentrantLock(false);
     //public static ReentrantLock settingsJSon_lock = new ReentrantLock(false);
 
-    private static ManufacturerSettings baseShipSettings;
+    private static ManufacturerSettings baseShipSettings = new ManufacturerSettings("starsector");
     private static ArrayList<ManufacturerSettings> shipSettings = new ArrayList<>();
     private static ArrayList<String> allowRestricted = new ArrayList<>();
     private static boolean buildRestricted;
@@ -93,25 +91,41 @@ public class Settings {
         allowRestricted.add(in);
         getAllowRestricted_lock().unlock();
     }
-    public static void setBaseShipSettings(ManufacturerSettings in){
-        getBaseShipSettings_lock().lock();
-        baseShipSettings = in;
-        getBaseShipSettings_lock().unlock();
-    }
     public static void addShipSettings(ManufacturerSettings in){
         getAllowRestricted_lock().lock();
         shipSettings.add(in);
         getAllowRestricted_lock().unlock();
     }
-    public static void setForceExclude(String in) {
+    public static void addForceExclude(String in) {
         getForceExclude_lock().lock();
         forceExclude.add(in);
         getForceExclude_lock().unlock();
     }
+
+    /*public static void setBaseShipSettings(ManufacturerSettings in){
+        getBaseShipSettings_lock().lock();
+        baseShipSettings = in;
+        getBaseShipSettings_lock().unlock();
+    }*/
     public static void setBuildRestricted(boolean in) {
         getBuildRestricted_lock().lock();
         buildRestricted = in;
         getBuildRestricted_lock().unlock();
+    }
+    public static void setAllowedRestricted(ArrayList<String> in){
+        getAllowRestricted_lock().lock();
+        allowRestricted = in;
+        getAllowRestricted_lock().unlock();
+    }
+    public static void setShipSettings(ArrayList<ManufacturerSettings> in){
+        getAllowRestricted_lock().lock();
+        shipSettings = in;
+        getAllowRestricted_lock().unlock();
+    }
+    public static void setForceExclude(ArrayList<String> in) {
+        getForceExclude_lock().lock();
+        forceExclude = in;
+        getForceExclude_lock().unlock();
     }
     /*public static void addSettingsJson(JSONObject in) {
         getSettingsJSon_lock().lock();

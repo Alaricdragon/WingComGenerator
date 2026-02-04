@@ -3,6 +3,7 @@ package main;
 import main.processers.MergeListMaster;
 import main.processers.MultiGetArray;
 import main.processers.CustomJSonReader;
+import main.settings.Settings;
 import main.threads.*;
 import main.types.*;
 import org.json.simple.JSONArray;
@@ -42,6 +43,7 @@ public class Seeker {
         //todo: I need to errase all variant and ship files creates by this mod when it starts up, to avoid issues.
         Thread[] removeItems = clearOldFiles();
         findValidMods();
+        findSettings();
         Thread factionFinder = findFactionCSVFiles();
         findCSVFiles();
         reorganizeHullsAndFighters();
@@ -91,16 +93,21 @@ public class Seeker {
         System.out.println("status: compleat. mods valid:");
         for (String a : storge.keySet()) System.out.println("   "+a);
     }
+    public static void findSettings(){
+        new Thread(new Process_Settings()).start();
+    }
     public static Thread findFactionCSVFiles(){
         Thread out = new Thread(new Process_FactionData());
         out.start();
         return out;
     }
     public static void findCSVFiles() throws InterruptedException {
-
         ThreadGroup pGroup = new ThreadGroup("seeker1");
         int ThreadSize = storge.size()*2;
         System.out.println("looking for hulls and fighters in mods...");
+
+
+        
         getStorgeLock().lock();
         for (String a : storge.keySet()){
             ModStorge b = storge.get(a);
@@ -126,6 +133,7 @@ public class Seeker {
         System.out.println(log);
     }
     public static void reorganizeHullsAndFighters() throws InterruptedException {
+        Settings.lock.lock();
         System.out.println("timing fighter and hull data so no copys exist...");
         ArrayList<ArrayList<Hull>> hulls = new ArrayList<>();
         ArrayList<ArrayList<Fighter>> fighters = new ArrayList<>();
@@ -141,16 +149,27 @@ public class Seeker {
             fightersSize+=b.fighters.size();
         }
         getStorgeLock().unlock();
+        MultiGetArray<String> excludeList = new MultiGetArray<>(Settings.getForceExclude(),(fighters.size() / 2) + 1);
+        MultiGetArray<String> allowRestricted = new MultiGetArray<>(Settings.getAllowRestricted(),(fighters.size() / 2) + 1);
+
         MergeListMaster<Hull> hullController = new MergeListMaster<Hull>(hulls) {
             @Override
             public Runnable getRunnable(ArrayList<Hull> listA, ArrayList<Hull> listB, MergeListMaster<Hull> This) {
                 return new OrganizeHulls(listA,listB,This);
             }
         };
+
+
+        //Settings.getForceExclude_lock().lock();
+        //Settings.getAllowRestricted_lock().lock();
+
+        //Settings.getForceExclude_lock().unlock();
+        //Settings.getAllowRestricted_lock().unlock();
+        
         MergeListMaster<Fighter> fighterController = new MergeListMaster<Fighter>(fighters) {
             @Override
             public Runnable getRunnable(ArrayList<Fighter> listA, ArrayList<Fighter> listB, MergeListMaster<Fighter> This) {
-                return new OrganizeFighters(listA,listB,This);
+                return new OrganizeFighters(listA,listB,This,excludeList,allowRestricted);
             }
         };
         new Thread(hullController).start();
@@ -165,6 +184,7 @@ public class Seeker {
         }
         finalFighters = fighterController.getFinalLists();
         finalHulls = hullController.getFinalLists();
+        Settings.lock.unlock();
         System.out.println("status: (hulls) completed. trimmed hulls from "+hullSize+" to "+ finalHulls.size());
         System.out.println("status: (fighters) completed. trimmed fighters from "+fightersSize+" to "+ finalFighters.size());
     }
@@ -219,6 +239,7 @@ public class Seeker {
             Thread.sleep(1000);
             System.out.println("status: "+controller.getStatus());
         }
+        
         getFinalVariants_lock().lock();
         finalVariants = controller.getFinalLists();
         System.out.println("status: completed. trimmed variants from "+listSize+" to "+ finalVariants.size());
@@ -268,7 +289,8 @@ public class Seeker {
             2) WAIT on this step until all threads created here have compleated there missions.
             -) if I input a list, I need to copy it for each thread, to avoid data issues
         */
-        if (true) return; //I dont want to look at this log -yet-. I will wait untill everything else is done.
+        //if (true) return; //I dont want to look at this log -yet-. I will wait untill everything else is done.
+        System.out.println("finding the relevant hull files from all available hull files");
         ArrayList<String> list = new ArrayList<>();
         getStorgeLock().lock();
         int size = storge.size();
@@ -285,37 +307,37 @@ public class Seeker {
         getStorgeLock().lock();
         for (String a : storge.keySet()){
             ModStorge b = storge.get(a);
-            new Thread(pGroup,new SeekHullsJsons(a,b.path,get));
+            new Thread(pGroup,new SeekHullsJsons(a,b.path,get)).start();
         }
         getStorgeLock().unlock();
         while (pGroup.activeCount() != 0){
             Thread.sleep(1000);
-            //log here
+            System.out.println("status (find .ship files): "+(size-pGroup.activeCount())+" / "+size);
         }
-        //todo: issue: this is a time I need to compare the hulls.csv files for the hull paths.
+        String log = "status (find .ship files): completed \n the following mods hold valid .ship files:";
+        storgeLock.lock();
+        for (String a : storge.keySet()){
+            ModStorge b = storge.get(a);
+            if (b.hullJsons.isEmpty()) continue;
+            log += "\n  "+b.id+" ("+b.hullJsons.size()+")";
+        }
+        storgeLock.unlock();
+        System.out.println(log);
     }
     public static void reorganizeHullJsons(){
         /*todo:
             1) reorganize all relevant data. please.
             2) I just need to merge the lists, focusing on mod ID.
+                -again.
          */
-    }
-    public static void applyFightersToFactions(ThreadGroup factionFighters){
-        //NOTE: this is moved into the secondary thread.
-        /*todo:
-            !) hold this until factionFighters has completed its operations.
-            1) for each faction that has fighters added, create 1 Create_FactionFighters thread.
-            2) create 1 Create_RolesJson thread
-            3) no need to wait, but don't close the program before this is done.
-            -) despite what it looks like, no lists overlap between threads here, do to the way this is set up.
-
-            */
     }
     public static void createFighterSpec(Thread[] deleteThreads){
         /*
         todo:
-            1) create 1 Create_ per fighter.
-            2) WAIT on this step until all threads created here have completed there missions
+            1) create 1 Create_ per fighter. (for ship file)
+            2) create 1 Create_ per fighter. (for variant file)
+            3) WAIT on this step until all threads created here have completed there missions
+            -) I require some additional data inside of WinComGenerator_Settings.json for this. like new flux changes and so on.
         */
     }
 

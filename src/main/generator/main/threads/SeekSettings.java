@@ -7,8 +7,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
-import java.util.ArrayList;
-
 public class SeekSettings implements Runnable{
     private String modID;//this is keept just in case I need it.
     private String path;
@@ -27,20 +25,25 @@ public class SeekSettings implements Runnable{
     public void processData(JSONObject json){
         if (json.containsKey("baseBuiltInHullMods")){
             JSONArray array = (JSONArray) json.get("baseBuiltInHullMods");
+            Settings.getBaseShipSettings_lock().lock();
             for (String a : CustomJSonReader.getItemsInArray(array)) Settings.getBaseShipSettings().hullMods.add(a);
+            Settings.getBaseShipSettings_lock().unlock();
         }
         if (json.containsKey("manufactureModifications")) {
             JSONObject mMods = (JSONObject) json.get("manufactureModifications");
             for (Object a : mMods.keySet()) {
-                JSONArray mMods2 = (JSONArray) mMods.get(a.toString());
-                ManufacturerSettings c = new ManufacturerSettings(a.toString());
-                for (String d : CustomJSonReader.getItemsInArray(mMods2)) c.hullMods.add(d);
-                Settings.addShipSettings(c);
+                JSONObject mMods3 = (JSONObject) mMods.get(a.toString());//each diffrent manufactuer edit.
+                if (mMods3.containsKey("BuiltInHullMods")){
+                    JSONArray mMods2 = (JSONArray) mMods.get("BuiltInHullMods");
+                    ManufacturerSettings c = new ManufacturerSettings(modID);
+                    for (String d : CustomJSonReader.getItemsInArray(mMods2)) c.hullMods.add(d);
+                    Settings.addShipSettings(c);
+                }
             }
         }
         if (json.containsKey("forceExclude")){
             JSONArray array = (JSONArray) json.get("forceExclude");
-            for (String a : CustomJSonReader.getItemsInArray(array)) Settings.setForceExclude(a);
+            for (String a : CustomJSonReader.getItemsInArray(array)) Settings.addForceExclude(a);
         }
         if (json.containsKey("ignoreRestrictedStatus")){
             JSONArray array = (JSONArray) json.get("ignoreRestrictedStatus");

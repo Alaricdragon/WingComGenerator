@@ -1,6 +1,7 @@
 package main.threads;
 
 import main.processers.MergeListMaster;
+import main.processers.MultiGetArray;
 import main.types.Fighter;
 import main.types.Variant;
 
@@ -31,6 +32,7 @@ public class OrganizeVariants implements Runnable{
             }
             if (build) out.add(a);
         }
+
         master.addList(out);
     }
 }

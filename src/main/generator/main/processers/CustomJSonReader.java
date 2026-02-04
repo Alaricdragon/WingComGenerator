@@ -65,6 +65,7 @@ public class CustomJSonReader {
         return (JSONObject) obj;
     }
     public static String[] getItemsInArray(JSONArray array){
+        if (array == null) return new String[0];
         String[] out = new String[array.size()];
         int d = 0;
         for (Object b : array){
