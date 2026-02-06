@@ -1,30 +1,67 @@
 {
-  "buildRestricted": "false",
-  #built in hull mods added to all ships
-  "baseBuiltInHullMods": [],
-  #additional hullmosd to diffrent manufactuers.
-  "manufactureModifications": {
-    "Remnant": {
-      #build in hullmods into this manufactuer (if they dont already exsist)
-      "BuiltInHullMods": [
-        "automated"
-      ]
+
+  "buildRestricted": false,
+  "spawnRestricted": false,
+  "permaMods": ["base mod a","base mod b"],
+  "tags": ["base mod a","base mod b"],
+  "forceExclude": [],
+  "ignoreRestrictedStatus": [],
+  "forceAllowSpawns": [],
+  "forcePreventSpawns": [],
+  "defaultShipData":{
+    "hull_data": {
+      "base": {
+        "other": {
+          "perma mods": [
+            "additional mod a",
+            "additional mod b"
+          ]
+        }
+      },
+      "shielded": {},
+      "phased": {},
+      "undefended": {},
+      "other": {}
     },
-    "Threat": {
-      "BuiltInHullMods": [
-        "automated"
-      ]
-    },
-    "Explorarium": {
-      "BuiltInHullMods": [
-        "automated"
-      ]
+    "variant_data": {
+      "base": {
+      },
+      "shielded": {},
+      "phased": {},
+      "undefended": {},
+      "other": {}
     }
   },
-  #forcefully prevent fighters inside of this block from being created
-  "forceExclude": [
+  "manufacturerSettings" : {
+    "Remnant": {
+      "base": {
+        "other": {
+          "perma mods": [
+            "automated"
+          ]
+        }
+      }
+    },
+    "Explorarium": {
+      "base": {
+        "other": {
+          "perma mods": [
+            "automated"
+          ]
+        }
+      }
+    },
+    "Threat": {
+      "base": {
+        "other": {
+          "perma mods": [
+            "automated"
+          ]
+        }
+      }
+    }
+  },
+  "fighterOverride":{
 
-  ],
-  #forcefully allow fighters inside of this block to be created
-  "ignoreRestrictedStatus": []
+  }
 }

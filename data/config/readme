@@ -1,0 +1,106 @@
+base settings:
+    base settings are settings that -can only be modified form this file- they are:
+    "buildRestricted" (allows fighters yuo would never see to be generated, but not built in fleets)
+    "spawnRestricted" (allows fighters you would never see to be built in fleets -if they are generated-)
+
+addable settings:
+    settings here can be added to from any mod with the WinComGenerator_Settings.json
+    settings here are not overwritten, but instead merged together.
+    "permaMods" hullmods added to all .ship files, regardless of other settings.
+    "tags" tags added to all ship.csv files, regardless of other settings.
+    "forceExclude" fighters that will be forcefully -not generated-
+    "ignoreRestrictedStatus" fighters that will be allowed to generate, even though they would normally be prevented from doing so.
+    "forceAllowSpawns" fighters that would be allowed to spawn in fleets, even though they normally would be prevented from doing so
+    "forcePreventSpawns" forcefully prevents fighters from spawning in fleets, regardless of status.
+overwritable settings:
+    these are settings that can be overwritten by other mods, or added together. conditions will be explained in each item.
+    "defaultShipData" anything inside of this can be overwriten, every indevidual section of this can be overwriten. as per the 'hull data and variant data information' page.
+                      this is the hull and variant data that will be used by default.
+    "manufacturerSettings" this holds a list of objects following the 'hull data and variant data information'.
+                           the name of each object determines what ship manufacturer this apply to. all ships of this manufactuer have the set data overriding
+                           effectively overrides 'defaultShipData' on a manufacturer by manufacturer bases
+                           only one mod can edit a given manufacturer. if two or more mods are editing the same manufacturer, the one with the lowest load order is discarded.
+    "fighterOverride" this holds a list of objects following the 'hull data and variant data information'
+                       the name of each object determines the fighter ID that is being overwritten (in the fighters.csv file).
+                       will override both 'manufacturer settings' and 'defaultShipData'
+                       only one mod can edit a given fighter. if two or more mods are editing the same fighter, the one with the lowest load order is discarded.
+hull data and variant data information:
+    please keep in mind: hull and variant data are devided into sections. they are:
+        "base"
+        "shielded"
+        "phased"
+        "undefended"
+        "other"
+        "fighters":
+            "base"
+            "shielded"
+            "phased"
+            "undefended"
+            "other"
+        "bombers":
+            "base"
+            "shielded"
+            "phased"
+            "undefended"
+            "other"
+        "interceptors":
+            "base"
+            "shielded"
+            "phased"
+            "undefended"
+            "other"
+        "other":
+            "base"
+            "shielded"
+            "phased"
+            "undefended"
+            "other"
+        in this, 'base' is the fallback. if you just want to override everything to be the same, you use 'base'.
+        the next 4 items are for defensive types. basicly, what defense this fighter has.
+        the 'fighters', 'bombers', 'interceptors', 'other' are for the fighter 'types'. within each, you can chose between all possable defensive types.
+        I might make this more flexible in the future, but I wanna play starsector.
+
+    the 'hull' type:
+        the hull type consists of two parts:
+        1: the 'base data': (this is for CSV data mostly. its effectively the ships base stats.)
+                            (the fighters also effects the .ship files and .variants files. but it does not matter)
+                            (please keep in mind: any indevidual bit of data you set here will override that bit of data, and only that bit of data for any ships this appys to.)
+            -: op
+            -: burn
+            -: fuel cap
+            -: cargo cap
+            -: crew cap
+            -: fighter bays with base fighter
+            -: fighter bays without base fighter
+            -: tags
+            -: perma mods
+            -
+            -: dp min
+            -: dp per fleet point
+            -
+            -: flux vent multi
+            -: flux vent flat
+            -
+            -: flux cap multi
+            -: flux cap flat
+            -
+            -: hull multi
+            -: hull flat
+            -
+            -: armor multi
+            -: armor flat
+            -
+            -: speed multi
+            -: speed flat
+        2: the .ship file: (as a literal .ship file. this is usefully for things like adding additional weapon slots onto the craft).
+                           (please note: if the .ship file is set, it will overwrite, not add to, the base .ship file in its intierty.)
+            - .ship
+    the 'variant' type:
+        this holds two things:
+        1: the spawn weight and type:
+            - spawnWeight:  the 'weight' of this to spawn in fleets
+            - spawnGroup:   what 'group' this is placed into in the 'roles.json' file.
+        2: the .variant data:
+            this is a .variant file for a fighter.
+            mostly used to set weapon data, and hull mods.
+            - .variant

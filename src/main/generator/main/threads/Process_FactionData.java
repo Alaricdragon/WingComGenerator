@@ -56,6 +56,7 @@ public class Process_FactionData implements Runnable{
        */
         File myObj = new File("./data/world/factions");
         myObj.delete();
+        Seeker.finishedClearingData.change(1);
     }
     public void clearRolesJson(){
         /* todo:

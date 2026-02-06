@@ -6,6 +6,9 @@ import main.processers.CustomJSonReader;
 import main.settings.Settings;
 import main.threads.*;
 import main.types.*;
+import org.LockedInteger;
+import org.LockedList;
+import org.LockedVariable;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
@@ -14,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Seeker {
@@ -24,24 +28,32 @@ public class Seeker {
 
     //private static MultiGetArray mods;
     //private static HashMap<String,String> modPaths = new HashMap<>();
-
+    @Deprecated
     private static ReentrantLock finalFighters_lock = new ReentrantLock(false);
+    @Deprecated
     private static ReentrantLock finalHulls_lock = new ReentrantLock(false);
+    @Deprecated
     private static ReentrantLock finalVariants_lock = new ReentrantLock(false);
+    @Deprecated
     private static ReentrantLock finalHullsJson_lock = new ReentrantLock(false);
-    private static ArrayList<Fighter> finalFighters = new ArrayList<>();
-    private static ArrayList<Hull> finalHulls = new ArrayList<>();
-    private static ArrayList<Variant> finalVariants = new ArrayList<>();
-    private static ArrayList<HullJson> finalHullJson = new ArrayList<>();
+
+    private static LockedList<Fighter> finalFighters = new LockedList<>(false);
+    private static LockedList<Hull> finalHulls = new LockedList<>(false);
+    private static LockedList<Variant> finalVariants = new LockedList<>(false);
+    public static LockedList<HullJson> finalHullJson = new LockedList<>(false);
+    public static LockedList<MatedFighters> matedFighters = new LockedList<>(false);
+
 
     private static ReentrantLock finishedGettingCoreData_Lock = new ReentrantLock(false);
     private static boolean finishedGettingCoreData = false;
+
+    public static LockedInteger finishedClearingData = new LockedInteger(0,false);//+1 for each type of item cleared. when a certen number, creation can start
 
     public static void runAllSeekers() throws IOException, ParseException, InterruptedException {
         /*todo: there is a possibility I will need to look at all the factionCSV files to get the currect location of were to put the faction folder.
                 if so, I can simply run that process first. it should be done by the time everything else is, but I should still lock the program at some ponit to avoid issues. (like at the stage I need faction data.)*/
         //todo: I need to errase all variant and ship files creates by this mod when it starts up, to avoid issues.
-        Thread[] removeItems = clearOldFiles();
+        clearOldFiles();
         findValidMods();
         findSettings();
         Thread factionFinder = findFactionCSVFiles();
@@ -53,17 +65,15 @@ public class Seeker {
         reorganizeValidHulls2();
         findHullFiles();
         reorganizeHullJsons();
+        mateFightersToHullsAndVariants();
         //applyFightersToFactions(factionFighters);
-        createFighterSpec(removeItems);
+        createFighterSpec();
     }
-    public static Thread[] clearOldFiles(){
+    public static void clearOldFiles(){
         //I should multithread this, do to the complexity.
-        Thread[] out = new Thread[2];
-        out[0] = new Thread(new Delete_Hulls());
-        out[1] = new Thread(new Delete_Variants());
-        out[0].start();
-        out[1].start();
-        return out;
+        new Thread(new Delete_Hulls()).start();
+        new Thread(new Delete_Variants()).start();
+        new Thread(new Delete_Roles()).start();
     }
     public static void findValidMods() throws IOException, ParseException, InterruptedException {
         JSONObject b = CustomJSonReader.getObject("../enabled_mods.json");
@@ -121,8 +131,8 @@ public class Seeker {
         }
         getStorgeLock().unlock();
         while (pGroup.activeCount() != 0){
-            Thread.sleep(100);
             System.out.println("status: "+(ThreadSize-pGroup.activeCount())+ " / "+ThreadSize);
+            Thread.sleep(1000);
         }
         System.out.println("status: complete. found "+fighterTotal+" fighters, and "+hullTotal+" hulls");
         String log = "mods with fighters: ";
@@ -133,7 +143,9 @@ public class Seeker {
         System.out.println(log);
     }
     public static void reorganizeHullsAndFighters() throws InterruptedException {
-        Settings.lock.lock();
+        while (!Settings.ready.get()){
+            Thread.sleep(100);
+        }
         System.out.println("timing fighter and hull data so no copys exist...");
         ArrayList<ArrayList<Hull>> hulls = new ArrayList<>();
         ArrayList<ArrayList<Fighter>> fighters = new ArrayList<>();
@@ -149,8 +161,8 @@ public class Seeker {
             fightersSize+=b.fighters.size();
         }
         getStorgeLock().unlock();
-        MultiGetArray<String> excludeList = new MultiGetArray<>(Settings.getForceExclude(),(fighters.size() / 2) + 1);
-        MultiGetArray<String> allowRestricted = new MultiGetArray<>(Settings.getAllowRestricted(),(fighters.size() / 2) + 1);
+        MultiGetArray<String> excludeList = new MultiGetArray<>(Settings.forceExclude.getListWithLock(),(fighters.size() / 2) + 1);
+        MultiGetArray<String> allowRestricted = new MultiGetArray<>(Settings.allowRestricted.getListWithLock(),(fighters.size() / 2) + 1);
 
         MergeListMaster<Hull> hullController = new MergeListMaster<Hull>(hulls) {
             @Override
@@ -158,7 +170,8 @@ public class Seeker {
                 return new OrganizeHulls(listA,listB,This);
             }
         };
-
+        Settings.forceExclude.unlock();
+        Settings.allowRestricted.unlock();
 
         //Settings.getForceExclude_lock().lock();
         //Settings.getAllowRestricted_lock().lock();
@@ -175,16 +188,15 @@ public class Seeker {
         new Thread(hullController).start();
         new Thread(fighterController).start();
         while (!fighterController.isComplete() || !hullController.isComplete()){
-            Thread.sleep(1000);
             if (hullController.isComplete()) System.out.println("status: (hulls) completed.");
             else System.out.println("status: (hulls)"+hullController.getStatus());
 
             if (fighterController.isComplete()) System.out.println("status: (fighters) completed.");
             else System.out.println("status: (fighters)"+fighterController.getStatus());
+            Thread.sleep(1000);
         }
-        finalFighters = fighterController.getFinalLists();
-        finalHulls = hullController.getFinalLists();
-        Settings.lock.unlock();
+        finalFighters.set(fighterController.getFinalLists());
+        finalHulls.set(hullController.getFinalLists());
         System.out.println("status: (hulls) completed. trimmed hulls from "+hullSize+" to "+ finalHulls.size());
         System.out.println("status: (fighters) completed. trimmed fighters from "+fightersSize+" to "+ finalFighters.size());
     }
@@ -194,9 +206,11 @@ public class Seeker {
         getStorgeLock().lock();
         int ThreadSize = storge.size();
         ArrayList<String> fighterIDs = new ArrayList<>();
-        for (Fighter a : finalFighters){
+        ArrayList<Fighter> temp = finalFighters.getListWithLock();
+        for (Fighter a : temp){
             fighterIDs.add(a.fighter_csv.variant);
         }
+        finalFighters.unlock();
 
         MultiGetArray<String> listTemp = new MultiGetArray<String>(fighterIDs,ThreadSize/2);
         for (String a : storge.keySet()) {
@@ -206,8 +220,8 @@ public class Seeker {
 
         getStorgeLock().unlock();
         while (pGroup.activeCount() != 0){
-            Thread.sleep(100);
             System.out.println("status (find variant files): "+(ThreadSize-pGroup.activeCount())+ " / "+ThreadSize);
+            Thread.sleep(1000);
         }
         System.out.println("status (find variant files): complete. found "+foundVariants+" valid variants");
         String log = "mods with fighter variant files:";
@@ -236,21 +250,22 @@ public class Seeker {
         };
         new Thread(controller).start();
         while (!controller.isComplete()){
-            Thread.sleep(1000);
             System.out.println("status: "+controller.getStatus());
+            Thread.sleep(1000);
         }
         
         getFinalVariants_lock().lock();
-        finalVariants = controller.getFinalLists();
+        finalVariants.set(controller.getFinalLists());
         System.out.println("status: completed. trimmed variants from "+listSize+" to "+ finalVariants.size());
         getFinalVariants_lock().unlock();
     }
     public static void reorganizeValidHulls2() throws InterruptedException {
         System.out.println("timing hulls from csv so only ones required by fighters exist...");
         getFinalHulls_lock().lock();
-        ArrayList<Hull> hulls = finalHulls;
+        ArrayList<Hull> hulls = finalHulls.getListWithLock();
         int totalHulls = hulls.size();
-        finalHulls = new ArrayList<>();
+        finalHulls.set(new ArrayList<>());
+        finalHulls.unlock();
         getFinalHulls_lock().unlock();
         ArrayList<ArrayList<Hull>> splitHulls = new ArrayList<>();
         ArrayList<Hull> target = new ArrayList<>();
@@ -265,7 +280,9 @@ public class Seeker {
         }
         getFinalVariants_lock().lock();
         ArrayList<String> variantHullList = new ArrayList<>();
-        for (Variant a : finalVariants) if (a.json.containsKey("hullId")) variantHullList.add(a.json.get("hullId").toString());
+        ArrayList<Variant> temp = finalVariants.getListWithLock();
+        for (Variant a : temp) if (a.json.containsKey("hullId")) variantHullList.add(a.json.get("hullId").toString());
+        finalVariants.unlock();
         getFinalVariants_lock().unlock();
         MultiGetArray<String> getArray = new MultiGetArray<>(variantHullList,(splitHulls.size() / 3) + 1);
         ThreadGroup pGroup = new ThreadGroup("seeker3");
@@ -277,30 +294,27 @@ public class Seeker {
         getFinalHulls_lock().lock();
         String log = "status (final hull.csv organization): completed. trimmed hulls from "+totalHulls+" to "+ finalHulls.size();
         log += "\n got valid hulls as:";
-        for (Hull a : finalHulls) log += "\n  "+a.ship_csv.id;
+        ArrayList<Hull> temp2 = finalHulls.getListWithLock();
+        for (Hull a : temp2) log += "\n  "+a.ship_csv.id;
+        finalHulls.unlock();
         getFinalHulls_lock().unlock();
         System.out.println(log);
         setFinishedGettingCoreData(true);
     }
     public static void findHullFiles() throws InterruptedException {
-        /*
-        todo:
-            1) create 1 SeekHullsJsons per mod. input the list of hulls created in reorganize00 for the 'seeking hulls'
-            2) WAIT on this step until all threads created here have compleated there missions.
-            -) if I input a list, I need to copy it for each thread, to avoid data issues
-        */
-        //if (true) return; //I dont want to look at this log -yet-. I will wait untill everything else is done.
         System.out.println("finding the relevant hull files from all available hull files");
         ArrayList<String> list = new ArrayList<>();
         getStorgeLock().lock();
         int size = storge.size();
         getStorgeLock().unlock();
         getFinalVariants_lock().lock();
-        for (Variant a : finalVariants){
+        ArrayList<Variant> temp = finalVariants.getListWithLock();
+        for (Variant a : temp){
             if (!a.json.containsKey("hullId")) continue;
             String c = a.json.get("hullId").toString();
             list.add(c);
         }
+        finalVariants.unlock();
         getFinalVariants_lock().unlock();
         MultiGetArray<String> get = new MultiGetArray<>(list,(size / 2) + 1);
         ThreadGroup pGroup = new ThreadGroup("seeker4");
@@ -311,8 +325,8 @@ public class Seeker {
         }
         getStorgeLock().unlock();
         while (pGroup.activeCount() != 0){
-            Thread.sleep(1000);
             System.out.println("status (find .ship files): "+(size-pGroup.activeCount())+" / "+size);
+            Thread.sleep(1000);
         }
         String log = "status (find .ship files): completed \n the following mods hold valid .ship files:";
         storgeLock.lock();
@@ -324,14 +338,90 @@ public class Seeker {
         storgeLock.unlock();
         System.out.println(log);
     }
-    public static void reorganizeHullJsons(){
+    public static void reorganizeHullJsons() throws InterruptedException {
         /*todo:
             1) reorganize all relevant data. please.
             2) I just need to merge the lists, focusing on mod ID.
                 -again.
          */
+        System.out.println("timing .ship data so no copys exist ");
+        getStorgeLock().lock();
+        ArrayList<ArrayList<HullJson>> list = new ArrayList<>();
+        int listSize = 0;
+        for (String a : storge.keySet()){
+            list.add(storge.get(a).hullJsons);
+            listSize+=storge.get(a).hullJsons.size();
+        }
+        getStorgeLock().unlock();
+        MergeListMaster contoler = new MergeListMaster<HullJson>(list) {
+            @Override
+            public Runnable getRunnable(ArrayList<HullJson> listA, ArrayList<HullJson> listB, MergeListMaster<HullJson> This) {
+                return new OrganizeHullJsons(listA,listB,This);
+            }
+        };
+        new Thread(contoler).start();
+        while (!contoler.isComplete()){
+            System.out.println("status (triming .ships): "+contoler.getStatus());
+            Thread.sleep(1000);
+        }
+        finalHullJson.set(contoler.getFinalLists());
+        System.out.println("status (triming .ships): completed. trimed "+listSize+" .ships down to "+finalHullJson.size());
     }
-    public static void createFighterSpec(Thread[] deleteThreads){
+    public static void mateFightersToHullsAndVariants() throws InterruptedException {
+        /*todo:
+            1) I need to create 3 MultiGetArrays (hulls, variants and hullJsons)
+            2) I need to build 1 OrganizeFighterMates per group of fighters.
+            3) wait untill all organizeFighterMates have compleated there tasks..
+        */
+        System.out.println("started to pair hull, ship, and variant data...");
+        ArrayList<Hull> hulls = finalHulls.getListWithLock();
+        ArrayList<Variant> variants = finalVariants.getListWithLock();
+        ArrayList<HullJson> hullJsons = finalHullJson.getListWithLock();
+        finalHulls.unlock();
+        finalVariants.unlock();
+        finalHullJson.unlock();
+        int hSize = hulls.size();
+        int vSize = variants.size();
+        int hjSize = hullJsons.size();
+        int fSize = finalFighters.size();
+        MultiGetArray<Hull> hArray = new MultiGetArray<Hull>(hulls,(fSize / 3) + 1);
+        MultiGetArray<Variant> vArray = new MultiGetArray<Variant>(variants,(fSize / 3) + 1);
+        MultiGetArray<HullJson> hjArray = new MultiGetArray<HullJson>(hullJsons,(fSize / 3) + 1);
+        ThreadGroup pGroup = new ThreadGroup("seeker5");
+        ArrayList<Fighter> temp = finalFighters.getListWithLock();
+        System.out.println("status (pairing fighter, hull, ship, and variant data...): "+" got Fighters, Hulls, Variants, and Ships to pair: "+fSize+", "+hSize+", "+vSize+", "+hjSize);
+        for (Fighter a : temp){
+            new Thread(pGroup,new OrganizeFighterMates(a,hArray,hjArray,vArray)).start();
+        }
+        finalFighters.unlock();
+        while (pGroup.activeCount() != 0){
+            System.out.println("status (pairing fighter, hull, ship, and variant data...): "+(fSize - pGroup.activeCount())+" / "+fSize);
+            Thread.sleep(1000);
+        }
+        String log = "status (pairing fighter, hull, ship, and variant data...): complete. got "+matedFighters.size()+" pairs";
+        log += "\n the final paired data is as follows:";
+        ArrayList<MatedFighters> list = matedFighters.getListWithLock();
+        for (MatedFighters a : list){
+            log += "\n  fighter, hull, ship, variant: "+a.fighter.fighter_csv.id+", "+a.hull.ship_csv.id+", "+a.hullJson.json.get("hullId").toString()+", "+a.variant.json.get("variantId").toString();
+        }
+        matedFighters.unlock();
+        System.out.println(log);
+    }
+    public static void createFighterSpec() throws InterruptedException {
+        //if (true) return;//dont want to deal with this yet.
+        while (finishedClearingData.get() < 4){
+            Thread.sleep(1000);//continue this untill ready.
+        }
+        /*todo:
+            1) I need to go onto my pc and get the following:
+                1: the json file modifications I make to the .variant file.
+                2: the rules for setting up the .ship file.
+                3: the rules for the csv files.
+                4: the required hullmods and tags.
+                5: the opp cost of heavy armor (for variants)
+                6: ... that should be it. just that for variants and hull data.
+                then, and only then, can I generate my data
+         */
         /*
         todo:
             1) create 1 Create_ per fighter. (for ship file)

@@ -6,8 +6,8 @@ public class Bean_Ship {
     public boolean isValid(){
         //todo: more data needs to be aquired so I can determin how to handle this....
         //      for now, I will simply use name and id for this check. maybe a few other things will prove 'required' latter.
-        if (this.name == null || this.name.startsWith("#")) return false;
-        if (this.id == null || this.id.startsWith("#")) return false;
+        if (this.name == null || this.name.startsWith("#") || this.name.isBlank()) return false;
+        if (this.id == null || this.id.startsWith("#") || this.id.isBlank()) return false;
         /*if (this.name.startsWith("#")) return false;
         if (this._8654.startsWith("#")) return false;
         if (this.acceleration.startsWith("#")) return false;

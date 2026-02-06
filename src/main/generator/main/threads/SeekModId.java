@@ -24,7 +24,7 @@ public class SeekModId implements Runnable{
 
             if (!b.containsKey("id")) return;
             id = b.get("id").toString();
-            if (id.equals("")) return;//TODO: make this so it exits on getting this mods ID.
+            if (id.equals("wingcom_generator")) return;
         }catch (Exception e){
             System.err.println("failed loop for mod: "+path+" of: "+e);
             return;

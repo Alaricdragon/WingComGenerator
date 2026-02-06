@@ -1,0 +1,16 @@
+{
+	"id":"wingcom_generator",
+	"name":"Wingcom Generator",
+	"author":"alaricdragon",
+	"version":"0.0.0",
+	"description":"needs to be active for generated wingcom units to appear",
+	"gameVersion":"0.98a",
+	#"jars":["CaptainsLog.jar"],
+	#"modPlugin":"CaptainsLog.CaptainsLogModPlugin",
+	"dependencies": [
+		{
+			"id": "lw_lazylib",
+			"name": "LazyLib"
+		}
+	]
+}

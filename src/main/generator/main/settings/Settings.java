@@ -1,135 +1,37 @@
 package main.settings;
 
-import java.util.ArrayList;
-import java.util.concurrent.locks.ReentrantLock;
+import org.LockedHashMap;
+import org.LockedList;
+import org.LockedVariable;
 
 public class Settings {
-    public static ReentrantLock lock = new ReentrantLock(false);
+    //public static ReentrantLock lock = new ReentrantLock(false);
+    public static LockedVariable<Boolean> ready = new LockedVariable<>(false,false);
 
-    public static ReentrantLock baseShipSettings_lock = new ReentrantLock(false);
-    public static ReentrantLock shipSettings_lock = new ReentrantLock(false);
-    public static ReentrantLock allowRestricted_lock = new ReentrantLock(false);
-    public static ReentrantLock buildRestricted_lock = new ReentrantLock(false);
-    public static ReentrantLock forceExclude_lock = new ReentrantLock(false);
-    //public static ReentrantLock settingsJSon_lock = new ReentrantLock(false);
+    public static LockedVariable<ShipGroupSettings> baseShipSettings;// = new LockedVariable<>(,new ShipGroupSettings("starsector"),false);
+    public static final LockedList<ShipGroupSettings> unsortedBaseShipSettings = new LockedList<>(false);//this requires special sorting to function
 
-    private static ManufacturerSettings baseShipSettings = new ManufacturerSettings("starsector");
-    private static ArrayList<ManufacturerSettings> shipSettings = new ArrayList<>();
-    private static ArrayList<String> allowRestricted = new ArrayList<>();
-    private static boolean buildRestricted;
-    private static ArrayList<String> forceExclude = new ArrayList<>();
+    public static final LockedHashMap<String,ShipGroupSettings> shipSettings_manufacturer = new LockedHashMap<>(false);
+    public static final LockedHashMap<String,ShipGroupSettings> shipSettings_shipID = new LockedHashMap<>(false);
+    //public static final LockedList<ShipGroupSettings> unsortedShipSettings = new LockedList<>(false);
 
-    //private static ArrayList<JSONObject> settingsJSon = new ArrayList<>();
-    public static void getAllSettings(){
-        //this will create a new thread to get the relevant settings.
-    }
 
-    public static synchronized ReentrantLock getAllowRestricted_lock() {
-        return allowRestricted_lock;
-    }
+    public static final LockedVariable<Boolean> buildRestricted = new LockedVariable<>(false,false);
+    public static final LockedVariable<Boolean> spawnRestricted = new LockedVariable<>(false,false);
 
-    public static synchronized ReentrantLock getBaseShipSettings_lock() {
-        return baseShipSettings_lock;
-    }
-
-    public static synchronized ReentrantLock getShipSettings_lock() {
-        return shipSettings_lock;
-    }
-
-    public static synchronized ReentrantLock getBuildRestricted_lock() {
-        return buildRestricted_lock;
-    }
-
-    public static synchronized ReentrantLock getForceExclude_lock() {
-        return forceExclude_lock;
-    }
-
-    /*public static synchronized ReentrantLock getSettingsJSon_lock() {
-        return settingsJSon_lock;
-    }*/
-
-    public static ArrayList<ManufacturerSettings> getShipSettings() {
-        getShipSettings_lock().lock();
-        ArrayList<ManufacturerSettings> out = shipSettings;
-        getShipSettings_lock().unlock();
-        return out;
-    }
-    public static ManufacturerSettings getBaseShipSettings() {
-        getBaseShipSettings_lock().lock();
-        ManufacturerSettings out = baseShipSettings;
-        getBaseShipSettings_lock().unlock();
-        return out;
-    }
-    public static ArrayList<String> getAllowRestricted() {
-        getAllowRestricted_lock().lock();
-        ArrayList<String> out = allowRestricted;
-        getAllowRestricted_lock().unlock();
-        return out;
-    }
-    public static ArrayList<String> getForceExclude() {
-        getForceExclude_lock().lock();
-        ArrayList<String> out = forceExclude;
-        getForceExclude_lock().unlock();
-        return out;
-    }
-    public static boolean isBuildRestricted() {
-        getBuildRestricted_lock().lock();
-        boolean out = buildRestricted;
-        getBuildRestricted_lock().unlock();
-        return out;
-    }
-
-    /*public static ArrayList<JSONObject> getSettingsJSon() {
-        getSettingsJSon_lock().lock();
-        ArrayList<JSONObject> out =  settingsJSon;
-        getSettingsJSon_lock().unlock();
-        return out;
-    }*/
-
-    public static void addAllowedRestricted(String in){
-        getAllowRestricted_lock().lock();
-        allowRestricted.add(in);
-        getAllowRestricted_lock().unlock();
-    }
-    public static void addShipSettings(ManufacturerSettings in){
-        getAllowRestricted_lock().lock();
-        shipSettings.add(in);
-        getAllowRestricted_lock().unlock();
-    }
-    public static void addForceExclude(String in) {
-        getForceExclude_lock().lock();
-        forceExclude.add(in);
-        getForceExclude_lock().unlock();
-    }
-
-    /*public static void setBaseShipSettings(ManufacturerSettings in){
-        getBaseShipSettings_lock().lock();
-        baseShipSettings = in;
-        getBaseShipSettings_lock().unlock();
-    }*/
-    public static void setBuildRestricted(boolean in) {
-        getBuildRestricted_lock().lock();
-        buildRestricted = in;
-        getBuildRestricted_lock().unlock();
-    }
-    public static void setAllowedRestricted(ArrayList<String> in){
-        getAllowRestricted_lock().lock();
-        allowRestricted = in;
-        getAllowRestricted_lock().unlock();
-    }
-    public static void setShipSettings(ArrayList<ManufacturerSettings> in){
-        getAllowRestricted_lock().lock();
-        shipSettings = in;
-        getAllowRestricted_lock().unlock();
-    }
-    public static void setForceExclude(ArrayList<String> in) {
-        getForceExclude_lock().lock();
-        forceExclude = in;
-        getForceExclude_lock().unlock();
-    }
-    /*public static void addSettingsJson(JSONObject in) {
-        getSettingsJSon_lock().lock();
-        settingsJSon.add(in);
-        getSettingsJSon_lock().unlock();
-    }*/
+    /// mods to always be added to every hull file, regardless of context.
+    public static final LockedList<String> permaMods = new LockedList<>(false);
+    public static final LockedList<String> tags = new LockedList<>(false);
+    public static final LockedList<String> forceExclude = new LockedList<>(false);
+    public static final LockedList<String> allowRestricted = new LockedList<>(false);
+    public static final LockedList<String> forceAllowSpawns = new LockedList<>(false);
+    public static final LockedList<String> forcePreventSpawns = new LockedList<>(false);
+    /*
+    "permaMods": [] #hullmods that will always be added to all generated fighters as a perma mod
+    "tags": [] #tags that will be always be added to all generated fighters
+    "forceExclude": []#ships within this will NOT be generated
+    "ignoreRestrictedStatus: []#ships within this will be generated.
+    "forceAllowSpawns": []#ships within this will spawn in fleets
+    "forcePreventSpawns": []#ships within this will NOT spawn in fleets.
+     */
 }

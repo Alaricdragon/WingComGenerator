@@ -8,8 +8,8 @@ import com.opencsv.bean.CsvBindByName;
 //@Setter
 public class Bean_Fighter {
     public boolean isValid(){
-        if (id == null || id.startsWith("#")) return false;
-        if (variant == null || variant.startsWith("#")) return false;
+        if (id == null || id.startsWith("#") || id.isBlank()) return false;
+        if (variant == null || variant.startsWith("#") || variant.isBlank()) return false;
         /*if (number.startsWith("#")) return false;
         if (num.startsWith("#")) return false;
         if (attackPositionOffset.startsWith("#")) return false;

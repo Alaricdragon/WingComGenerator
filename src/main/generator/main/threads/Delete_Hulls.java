@@ -1,5 +1,7 @@
 package main.threads;
 
+import main.Seeker;
+
 import java.io.File;
 
 public class Delete_Hulls implements Runnable{
@@ -10,5 +12,6 @@ public class Delete_Hulls implements Runnable{
         myObj.delete();
         String log = "status (remove old variant files): complete";
         System.out.println(log);
+        Seeker.finishedClearingData.change(1);
     }
 }

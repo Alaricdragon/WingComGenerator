@@ -6,7 +6,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public abstract class MergeListMaster<A> implements Runnable{
     private final ArrayList<ArrayList<A>> lists;
     private boolean complete = false;
-    private ThreadGroup pGroup;
+    private final ThreadGroup pGroup;
     private static int used = 0;
 
     private int completed = 0;
@@ -14,6 +14,23 @@ public abstract class MergeListMaster<A> implements Runnable{
 
     private ReentrantLock lock = new ReentrantLock(false);
     private ReentrantLock completeLock = new ReentrantLock(false);
+    /// for merging of lists from a single list.
+    public MergeListMaster(ArrayList<A> lists,int size){
+        this.lists = new ArrayList<>();
+        pGroup = new ThreadGroup("organizer_MergeList_"+used);
+        ArrayList<A> b = new ArrayList<>();
+        this.lists.add(b);
+        for (A a : lists){
+            if (b.size() >= size){
+                b = new ArrayList<>();
+                this.lists.add(b);
+            }
+            b.add(a);
+        }
+        used++;
+        totalLists = this.lists.size();
+    }
+    /// for simple merging of lists
     public MergeListMaster(ArrayList<ArrayList<A>> lists ){
         this.lists = lists;
         pGroup = new ThreadGroup("organizer_MergeList_"+used);
