@@ -3,6 +3,84 @@ package main.beans;
 import com.opencsv.bean.CsvBindByName;
 
 public class Bean_Ship {
+    public Bean_Ship(){
+
+    }
+    public Bean_Ship(Bean_Ship b){
+
+          name=b.name;
+
+          id=b.id;
+
+          designation=b.designation;
+          tech_manufacturer=b.tech_manufacturer;
+          system_id=b.system_id;
+          fleet_pts=b.fleet_pts;
+
+          hitpoints=b.hitpoints;
+          armor_rating=b.armor_rating;
+          max_flux=b.max_flux;
+          _8654=b._8654;
+          flux_dissipation=b.flux_dissipation;
+          ordnance_points=b.ordnance_points;
+          fighter_bays=b.fighter_bays;
+          max_speed=b.max_speed;
+
+          acceleration=b.acceleration;
+
+          deceleration=b.deceleration;
+          max_turn_rate=b.max_turn_rate;
+          turn_acceleration=b.turn_acceleration;
+
+          mass=b.mass;
+          shield_type=b.shield_type;
+          defense_id=b.defense_id;
+          shield_arc=b.shield_arc;
+          shield_upkeep=b.shield_upkeep;
+          shield_efficiency=b.shield_efficiency;
+          phase_cost=b.phase_cost;
+          phase_upkeep=b.phase_upkeep;
+          min_crew=b.min_crew;
+          max_crew=b.max_crew;
+
+          cargo=b.cargo;
+
+          fuel=b.fuel;
+          fuel_ly=b.fuel_ly;
+
+          range=b.range;
+          max_burn=b.max_burn;
+          base_value=b.base_value;
+          cr_day=b.cr_day;
+          CR_to_deploy=b.CR_to_deploy;
+          peak_CR_sec=b.peak_CR_sec;
+          CR_loss_sec=b.CR_loss_sec;
+          supplies_rec=b.supplies_rec;
+          supplies_mo=b.supplies_mo;
+          c_s=b.c_s;
+          c_f=b.c_f;
+          f_s=b.f_s;
+          f_f=b.f_f;
+          crew_s=b.crew_s;
+          crew_f=b.crew_f;
+
+          hints=b.hints;
+
+          tags=b.tags;
+          logistics_n_a_reason=b.logistics_n_a_reason;
+          codex_variant_id=b.codex_variant_id;
+
+          rarity=b.rarity;
+
+          breakProb=b.breakProb;
+
+          minPieces=b.minPieces;
+
+          maxPieces=b.maxPieces;
+          travel_drive=b.travel_drive;
+
+          number=b.number=b.number;
+    }
     public boolean isValid(){
         //todo: more data needs to be aquired so I can determin how to handle this....
         //      for now, I will simply use name and id for this check. maybe a few other things will prove 'required' latter.

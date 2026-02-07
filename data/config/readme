@@ -2,7 +2,6 @@ base settings:
     base settings are settings that -can only be modified form this file- they are:
     "buildRestricted" (allows fighters yuo would never see to be generated, but not built in fleets)
     "spawnRestricted" (allows fighters you would never see to be built in fleets -if they are generated-)
-
 addable settings:
     settings here can be added to from any mod with the WinComGenerator_Settings.json
     settings here are not overwritten, but instead merged together.
@@ -70,13 +69,21 @@ hull data and variant data information:
             -: fuel cap
             -: cargo cap
             -: crew cap
+            -: fuel ly
+            -: cr-day
+            -: peck cr
+            -: cr loss - sec
+            -: break prob
+            -: min peaces
+            -: max peaces
             -: fighter bays with base fighter
             -: fighter bays without base fighter
-            -: tags
-            -: perma mods
+            -: tags             a list of tags to be added
+            -: perma mods       a list of hullmods to be added
+            -: hints            a list of hints to be added
             -
-            -: dp min
-            -: dp per fleet point
+            -: dpPerOp
+            -: dpFlat
             -
             -: flux vent multi
             -: flux vent flat
@@ -92,6 +99,24 @@ hull data and variant data information:
             -
             -: speed multi
             -: speed flat
+            -
+            -: value multi
+            -: value flat
+            -
+            -: supplies-rec multi (per op cost of fighter)
+            -: supplies-rec flat
+            -
+            -: supplies-month multi (per op cost of fighter)
+            -: supplies-month flat
+            -
+            -: acceleration multi
+            -: acceleration flat
+            -
+            -: deceleration multi
+            -: deceleration flat
+            -
+            -: cr to deploy multi
+            -: cr to deploy flat
         2: the .ship file: (as a literal .ship file. this is usefully for things like adding additional weapon slots onto the craft).
                            (please note: if the .ship file is set, it will overwrite, not add to, the base .ship file in its intierty.)
             - .ship

@@ -22,6 +22,7 @@ public class Settings {
     /// mods to always be added to every hull file, regardless of context.
     public static final LockedList<String> permaMods = new LockedList<>(false);
     public static final LockedList<String> tags = new LockedList<>(false);
+    public static final LockedList<String> hints = new LockedList<>(false);
     public static final LockedList<String> forceExclude = new LockedList<>(false);
     public static final LockedList<String> allowRestricted = new LockedList<>(false);
     public static final LockedList<String> forceAllowSpawns = new LockedList<>(false);

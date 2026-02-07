@@ -1,5 +1,6 @@
 package main;
 
+import main.beans.Bean_Ship;
 import main.processers.MergeListMaster;
 import main.processers.MultiGetArray;
 import main.processers.CustomJSonReader;
@@ -21,6 +22,8 @@ import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Seeker {
+    public static LockedList<Bean_Ship> shipsToPrintToCSV = new LockedList<>(false);
+
     private static ReentrantLock storgeLock = new ReentrantLock(false);
     private static ReentrantLock factionStorgeLock = new ReentrantLock(false);
     public static HashMap<String, ModStorge> storge = new HashMap<>();
@@ -424,7 +427,7 @@ public class Seeker {
          */
         /*
         todo:
-            1) create 1 Create_ per fighter. (for ship file)
+            1) create 1 Create_shipData per fighter. (for ship file & variant file. because why not? I cant raelly do them at the same time anyways.)
             2) create 1 Create_ per fighter. (for variant file)
             3) WAIT on this step until all threads created here have completed there missions
             -) I require some additional data inside of WinComGenerator_Settings.json for this. like new flux changes and so on.

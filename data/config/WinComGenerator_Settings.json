@@ -3,7 +3,7 @@
   "buildRestricted": false,
   "spawnRestricted": false,
   "permaMods": ["base mod a","base mod b"],
-  "tags": ["base mod a","base mod b"],
+  "tags": ["fake_fighter","base mod b"],
   "forceExclude": [],
   "ignoreRestrictedStatus": [],
   "forceAllowSpawns": [],

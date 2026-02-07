@@ -152,6 +152,10 @@ public class SeekSettings implements Runnable{
             JSONArray array = (JSONArray) json.get("tags");
             for (String a : CustomJSonReader.getItemsInArray(array)) Settings.tags.add(a);
         }
+        if (json.containsKey("hints")){
+            JSONArray array = (JSONArray) json.get("hints");
+            for (String a : CustomJSonReader.getItemsInArray(array)) Settings.hints.add(a);
+        }
         if (json.containsKey("forceExclude")){
             JSONArray array = (JSONArray) json.get("forceExclude");
             for (String a : CustomJSonReader.getItemsInArray(array)) Settings.forceExclude.add(a);
