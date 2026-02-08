@@ -1,0 +1,32 @@
+{
+  #custom fighters by manufacturer, to only have the 'automated' perma mod.
+  "manufacturerSettings" : {
+    "Remnant": {
+      "hull_data": {
+        "base": {
+          "perma mods": [
+            "automated"
+          ]
+        }
+      }
+    },
+    "Explorarium": {
+      "hull_data": {
+        "base": {
+          "perma mods": [
+            "automated"
+          ]
+        }
+      }
+    },
+    "Threat": {
+      "hull_data": {
+        "base": {
+          "perma mods": [
+            "automated"
+          ]
+        }
+      }
+    }
+  },
+}

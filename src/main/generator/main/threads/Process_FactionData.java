@@ -1,9 +1,12 @@
 package main.threads;
 
 import main.Seeker;
+import main.processers.MergeListMaster;
+import main.processers.MultiGetArray;
 import main.types.FactionPaths;
 import main.types.FactionStorge;
 import main.types.ModStorge;
+import org.LockedList;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -23,9 +26,14 @@ public class Process_FactionData implements Runnable{
                 -this lets me move findFactionFighters into the this thread group.
             5: add the blueprints to the relative factions.
             6: create the roles.json file.
+            NOTICE: its possable to fail to get the currect variant on certen fighters.
+            as a resalt, I need to wait until -after- fighter mates have been created to create relevent faction and roles.json files.
 
             yes, this intier process can run paraleal. so it should be fine...?
          */
+        /*
+
+        */
         /*possable issues: 1: are faction files always in the same position?*/
         // faction csv location 'data\world\factions\factions.csv' it finds us the faction files with the 'faction' field. (relitive to the mod)
         // known fighters: faction file :
@@ -40,10 +48,10 @@ public class Process_FactionData implements Runnable{
         clearRolesJson();
         try {
             findFactionCSV();
-            organizeFactionCSV();
             findFactionJSons();
-            organizeFactionJsons();
-            findFactionFighters();
+            organizeFactionStorge();
+
+            findFactionFighters();//only once the merged list is fully ready.
             createRolesJson();
             createFactionJsons();
         }catch (Exception e){
@@ -82,24 +90,49 @@ public class Process_FactionData implements Runnable{
             System.out.println("status (find faction CSV): "+(size-pGroup.activeCount())+ " / "+size);
         }
         String log = "status (find faction CSV)"+"\n"+"faction paths found:";
-        for (FactionPaths a : factionPaths){
+        for (FactionPaths a : factionPaths.getListWithLock()){
             log+="\n    "+a.path;
         }
+        factionPaths.unlock();
         System.out.println(log);
 
     }
-    public void organizeFactionCSV(){
+    public void findFactionJSons() throws InterruptedException {
+        /*todo:
+            1) create 1 SeekFactionPaths per mod (look for all relevent faction files in each mod)
+            2) wait for this process to finish
+        */
+        //if (true) return;
+        int size = factionPaths.size();
+        MultiGetArray<FactionPaths> paths = new MultiGetArray<>(factionPaths.getListWithLock(),(factionPaths.size() / 3) + 1);
+        factionPaths.unlock();
+        ThreadGroup pGroup = new ThreadGroup("find faction jsons");
+        Seeker.getStorgeLock().lock();
+        for (String a : Seeker.storge.keySet()){
+            String b = Seeker.storge.get(a).path;
+            new Thread(pGroup,new SeekFactionPaths(b,paths)).start();
+        }
+        Seeker.getStorgeLock().unlock();
+        while (pGroup.activeCount() != 0){
+            System.out.println("status: (find faction jsons): "+(size-pGroup.activeCount())+" / "+size);
+            Thread.sleep(1000);
+        }
+        System.out.println("status: (find faction jsons): compleat.");
+        factionPaths.unlock();
+    }
+    public void organizeFactionStorge(){
         /*todo:
             1) create 1 MergeListMaster for this. it should beable to handle this (faction CSVs are probably load order dependant.)
             -) this will be what creates the FactionStorge files.
         */
-    }
-    public void findFactionJSons(){
-        /*todo:
-            1) create 1 Seek_ per mod (look for all relevent faction files in each mod)
-            2) wait for this process to finish
-        */
-
+        if (true) return;
+        MergeListMaster<FactionStorge> merger = new MergeListMaster<FactionStorge>(factionStorge.getListWithLock(),1){
+            @Override
+            public Runnable getRunnable(ArrayList<FactionStorge> listA, ArrayList<FactionStorge> listB, MergeListMaster<FactionStorge> This) {
+                return new OrganizeFactionStorge(listA,listB,This);
+            }
+        };
+        factionPaths.unlock();
     }
     public void organizeFactionJsons(){
         /* todo:
@@ -129,8 +162,6 @@ public class Process_FactionData implements Runnable{
             2) wait for this process to finish
         */
     }
-    private static ArrayList<FactionPaths> factionPaths = new ArrayList<>();
-    public static synchronized void addFactionPath(String path,int order){
-        factionPaths.add(new FactionPaths(path,order));
-    }
+    public static LockedList<FactionPaths> factionPaths = new LockedList<>(false);
+    public static LockedList<FactionStorge> factionStorge = new LockedList<>(false);
 }

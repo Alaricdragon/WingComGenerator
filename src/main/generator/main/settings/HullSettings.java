@@ -8,7 +8,6 @@ import org.json.simple.JSONObject;
 import java.util.ArrayList;
 
 public class HullSettings {
-    //todo: the hull varuble needs to be changed to something custom. because its not good as is. I only need to change certen data.
     //note: no need for locked varubles. they are locked in other places
     // on the other hand, having them linked would..
     // arg... ok so: linked value issues. I get the class and its fine. the object is not protected unless I take specal consideration! solution required. some day.
@@ -30,6 +29,7 @@ public class HullSettings {
     public int crDay = -9999;
     public int peakCR = -9999;
     public float crLossPerSecond = -9999;
+    public int crToDeploy = -9999;
     public float breakProb = -9999;
     public int maxPeaces = -9999;
     public int minPeaces = -9999;
@@ -48,19 +48,17 @@ public class HullSettings {
     public float valueM = -9999;
     public float valueF = -9999;
     public float suppliesRecoverM = -9999;
-    public int suppliesRecoverF;
-    public float suppliesMonthM;
-    public int suppliesMonthF;
-    public float accelerationM;
-    public float accelerationF;
-    public float decelerationM;
-    public float decelerationF;
-    public float crToDeployM;
-    public float crToDeployF;
+    public int suppliesRecoverF = -9999;
+    public float suppliesMonthM = -9999;
+    public int suppliesMonthF = -9999;
+    public float accelerationM = -9999;
+    public float accelerationF = -9999;
+    public float decelerationM = -9999;
+    public float decelerationF = -9999;
+    //public float crToDeployM;
+    //public float crToDeployF;
     public HullSettings(int priority, JSONObject json){
         this.priority = priority;
-        //todo: add lists of both types.
-        //todo: add a second getJsonOrNull for floats.
         speedF = getJSonOrNull(json,"speed flat");
         speedM = getJSonOrNull(json,"speed multi");
         armorF = getJSonOrNull(json,"armor flat");
@@ -97,8 +95,9 @@ public class HullSettings {
         accelerationF = getJSonOrNull(json,"acceleration flat");
         decelerationM = getJSonOrNull(json,"deceleration multi");
         decelerationF = getJSonOrNull(json,"deceleration flat");
-        crToDeployM = getJSonOrNull(json,"cr to deploy multi");
-        crToDeployF = getJSonOrNull(json,"cr to deploy flat");
+        crToDeploy = (int) getJSonOrNull(json,"cr to deploy");
+        //crToDeployM = getJSonOrNull(json,"cr to deploy multi");
+        //crToDeployF = getJSonOrNull(json,"cr to deploy flat");
 
         if (json.containsKey("hints")){
             JSONArray array = (JSONArray) json.get("hints");
@@ -119,7 +118,7 @@ public class HullSettings {
             }
         }
         if (json.containsKey(".ship")){
-            this.json.set(new HullJson((JSONObject) json.get(".ship"),priority));
+            this.json = new LockedVariable<>(new HullJson((JSONObject) json.get(".ship"),priority),false);
         }
     }
     private float getJSonOrNull(JSONObject json,String key){
@@ -132,7 +131,7 @@ public class HullSettings {
     }
     /// in this case, b is the 'overrideing' hullSettings. a is the not overriding hullsettings.
     public HullSettings(HullSettings a, HullSettings b){
-        tags = a.tags;
+        tags = canUse(b.tags) ? b.tags : a.tags;
         hints = canUse(b.hints) ? b.hints : a.hints;
         perma_hullmods = canUse(b.perma_hullmods) ? b.perma_hullmods : a.perma_hullmods;
         baseFighters = canUse(b.baseFighters) ? b.baseFighters : a.baseFighters;
@@ -171,8 +170,9 @@ public class HullSettings {
         accelerationF = canUse(b.accelerationF) ? b.accelerationF :a.accelerationF;
         decelerationM = canUse(b.decelerationM) ? b.decelerationM :a.decelerationM;
         decelerationF = canUse(b.decelerationF) ? b.decelerationF :a.decelerationF;
-        crToDeployM = canUse(b.crToDeployF) ? b.crToDeployF :a.crToDeployF;
-        crToDeployF = canUse(b.crToDeployF) ? b.crToDeployF :a.crToDeployF;
+        crToDeploy = canUse(b.crToDeploy) ? b.crToDeploy : a.crToDeploy;
+        //crToDeployM = canUse(b.crToDeployF) ? b.crToDeployF :a.crToDeployF;
+        //crToDeployF = canUse(b.crToDeployF) ? b.crToDeployF :a.crToDeployF;
         json = canUse(b.json) ? b.json : a.json;
     }
     private boolean canUse(ArrayList<String> in){

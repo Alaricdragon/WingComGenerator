@@ -173,6 +173,20 @@ public class SeekSettings implements Runnable{
             for (String a : CustomJSonReader.getItemsInArray(array)) Settings.forcePreventSpawns.add(a);
         }
 
+        if (json.containsKey("manufacturersForceAutomated")){
+            JSONArray array = (JSONArray) json.get("manufacturersForceAutomated");
+            for (String a : CustomJSonReader.getItemsInArray(array)) Settings.manufacturersForceAutomated.add(a);
+        }
+        if (json.containsKey("shipsForceAutomated")){
+            JSONArray array = (JSONArray) json.get("shipsForceAutomated");
+            for (String a : CustomJSonReader.getItemsInArray(array)) Settings.shipsForceAutomated.add(a);
+        }
+        if (json.containsKey("shipsForceNotAutomated")){
+            JSONArray array = (JSONArray) json.get("shipsForceNotAutomated");
+            for (String a : CustomJSonReader.getItemsInArray(array)) Settings.shipsForceNotAutomated.add(a);
+        }
+
+
         processDefaultShipData(json);
 
         if (json.containsKey("manufacturerSettings")){

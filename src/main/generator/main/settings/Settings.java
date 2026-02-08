@@ -18,6 +18,8 @@ public class Settings {
 
     public static final LockedVariable<Boolean> buildRestricted = new LockedVariable<>(false,false);
     public static final LockedVariable<Boolean> spawnRestricted = new LockedVariable<>(false,false);
+    public static final LockedVariable<Boolean> automateDroneFighters = new LockedVariable<>(false,false);
+    public static final LockedVariable<Boolean> autoShips_DontCostAutoPoints = new LockedVariable<>(false,false);
 
     /// mods to always be added to every hull file, regardless of context.
     public static final LockedList<String> permaMods = new LockedList<>(false);
@@ -27,6 +29,9 @@ public class Settings {
     public static final LockedList<String> allowRestricted = new LockedList<>(false);
     public static final LockedList<String> forceAllowSpawns = new LockedList<>(false);
     public static final LockedList<String> forcePreventSpawns = new LockedList<>(false);
+    public static final LockedList<String> manufacturersForceAutomated = new LockedList<>(false);
+    public static final LockedList<String> shipsForceAutomated = new LockedList<>(false);
+    public static final LockedList<String> shipsForceNotAutomated = new LockedList<>(false);
     /*
     "permaMods": [] #hullmods that will always be added to all generated fighters as a perma mod
     "tags": [] #tags that will be always be added to all generated fighters

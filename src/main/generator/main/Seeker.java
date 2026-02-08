@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Seeker {
+    public static LockedVariable<Boolean> finishedCreatingPaths = new LockedVariable<>(false,false);
     public static LockedList<Bean_Ship> shipsToPrintToCSV = new LockedList<>(false);
 
     private static ReentrantLock storgeLock = new ReentrantLock(false);
@@ -53,10 +54,15 @@ public class Seeker {
     public static LockedInteger finishedClearingData = new LockedInteger(0,false);//+1 for each type of item cleared. when a certen number, creation can start
 
     public static void runAllSeekers() throws IOException, ParseException, InterruptedException {
-        /*todo: there is a possibility I will need to look at all the factionCSV files to get the currect location of were to put the faction folder.
-                if so, I can simply run that process first. it should be done by the time everything else is, but I should still lock the program at some ponit to avoid issues. (like at the stage I need faction data.)*/
-        //todo: I need to errase all variant and ship files creates by this mod when it starts up, to avoid issues.
+        /*todo: what is left?
+        *  1: creating the faction files (aka adding ships into the world)
+        *  2: getting all ships that are 'automated' in the modverse so I can stop being scared of getting that wrong
+        *  3: getting all ships from armma armada that should NOT be included in this, because there are a few that are already strike craft.
+        *  4: make sure this works on larger mod lists
+        *  5: make sure the mod 'order'/'priority' is currect, beccause it might not be.*/
+
         clearOldFiles();
+        repairPaths();
         findValidMods();
         findSettings();
         Thread factionFinder = findFactionCSVFiles();
@@ -71,12 +77,16 @@ public class Seeker {
         mateFightersToHullsAndVariants();
         //applyFightersToFactions(factionFighters);
         createFighterSpec();
+        createHullCSV();
     }
     public static void clearOldFiles(){
         //I should multithread this, do to the complexity.
         new Thread(new Delete_Hulls()).start();
         new Thread(new Delete_Variants()).start();
         new Thread(new Delete_Roles()).start();
+    }
+    public static void repairPaths(){
+        new Thread(new Create_Paths()).start();
     }
     public static void findValidMods() throws IOException, ParseException, InterruptedException {
         JSONObject b = CustomJSonReader.getObject("../enabled_mods.json");
@@ -126,8 +136,6 @@ public class Seeker {
             ModStorge b = storge.get(a);
             String mod = a;
             String path = b.path;
-            //TODO: ISSUE: I need to get the currect priority of a mod before this happens? wait... no.
-            //      I dont need that yet. having priority on this ships does not matter. I will keep it as it is for now.
             float priority = 0;
             new Thread(pGroup, new SeekFighters(mod,path,priority)).run();
             new Thread(pGroup, new SeekHulls(mod,path,priority)).run();
@@ -342,11 +350,6 @@ public class Seeker {
         System.out.println(log);
     }
     public static void reorganizeHullJsons() throws InterruptedException {
-        /*todo:
-            1) reorganize all relevant data. please.
-            2) I just need to merge the lists, focusing on mod ID.
-                -again.
-         */
         System.out.println("timing .ship data so no copys exist ");
         getStorgeLock().lock();
         ArrayList<ArrayList<HullJson>> list = new ArrayList<>();
@@ -371,11 +374,6 @@ public class Seeker {
         System.out.println("status (triming .ships): completed. trimed "+listSize+" .ships down to "+finalHullJson.size());
     }
     public static void mateFightersToHullsAndVariants() throws InterruptedException {
-        /*todo:
-            1) I need to create 3 MultiGetArrays (hulls, variants and hullJsons)
-            2) I need to build 1 OrganizeFighterMates per group of fighters.
-            3) wait untill all organizeFighterMates have compleated there tasks..
-        */
         System.out.println("started to pair hull, ship, and variant data...");
         ArrayList<Hull> hulls = finalHulls.getListWithLock();
         ArrayList<Variant> variants = finalVariants.getListWithLock();
@@ -412,27 +410,33 @@ public class Seeker {
     }
     public static void createFighterSpec() throws InterruptedException {
         //if (true) return;//dont want to deal with this yet.
-        while (finishedClearingData.get() < 4){
+        while (!finishedCreatingPaths.get()){
             Thread.sleep(1000);//continue this untill ready.
         }
-        /*todo:
-            1) I need to go onto my pc and get the following:
-                1: the json file modifications I make to the .variant file.
-                2: the rules for setting up the .ship file.
-                3: the rules for the csv files.
-                4: the required hullmods and tags.
-                5: the opp cost of heavy armor (for variants)
-                6: ... that should be it. just that for variants and hull data.
-                then, and only then, can I generate my data
-         */
-        /*
-        todo:
-            1) create 1 Create_shipData per fighter. (for ship file & variant file. because why not? I cant raelly do them at the same time anyways.)
-            2) create 1 Create_ per fighter. (for variant file)
-            3) WAIT on this step until all threads created here have completed there missions
-            -) I require some additional data inside of WinComGenerator_Settings.json for this. like new flux changes and so on.
-        */
+        System.out.println("started the process of creating fighter .variant, and .ship files...");
+        ThreadGroup pGroup = new ThreadGroup("seeker6");
+        int size = matedFighters.size();
+        for (MatedFighters a : matedFighters.getListWithLock()){
+            new Thread(pGroup,new Create_shipData(a)).start();
+        }
+        matedFighters.unlock();
+        while (pGroup.activeCount() != 0){
+            System.out.println("status (create fighter .variant, and .ship):"+(size-pGroup.activeCount())+" / "+size);
+            Thread.sleep(1000);
+        }
+        System.out.println("status (create fighter .variant, and .ship): compleat. hopefully that worked without to many errors");
     }
+    public static void createHullCSV() throws InterruptedException {
+        System.out.println("started the process of creating the hulls.csv file...");
+        Thread a = new Thread(new Create_HullCSV());
+        a.start();
+        while (a.isAlive()){
+            System.out.println("status (create hull.csv file): 0 / 1");
+            Thread.sleep(1000);
+        }
+        System.out.println("status (create hull.csv file): completed.");
+    }
+
 
     public static void addModPath(String id,String path){
         getStorgeLock().lock();

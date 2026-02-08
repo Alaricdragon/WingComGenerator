@@ -45,11 +45,10 @@ public class Process_Settings implements Runnable{
         for (ShipGroupSettings a : Settings.shipSettings_manufacturer.getListWithLock().values()){
             log += "\n  "+a.mod_id;
         }
+        Settings.shipSettings_manufacturer.unlock();
 
         log+=" \n got mods with single ship settings as:";
-        for (ShipGroupSettings a : Settings.shipSettings_shipID.getListWithLock().values()){
-            log += "\n  "+a.mod_id;
-        }
+        for (ShipGroupSettings a : Settings.shipSettings_shipID.getListWithLock().values()) log += "\n  "+a.mod_id;
         Settings.shipSettings_shipID.unlock();
 
         log+=" \n got allow restricted as:";

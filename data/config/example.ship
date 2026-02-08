@@ -1,0 +1,16 @@
+{
+    "weaponSlots": [
+        {
+            "angle": 0,
+            "arc": 60,
+            "id": "winComGeneratorMount_000",
+            "locations": [
+                -10,
+                0
+            ],
+            "mount": "HIDDEN",
+            "size": "SMALL",
+            "type": "UNIVERSAL"
+        },
+    ]
+}

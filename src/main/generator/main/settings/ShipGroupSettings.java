@@ -5,9 +5,6 @@ import org.LockedVariable;
 import org.json.simple.JSONObject;
 
 public class ShipGroupSettings {
-    /*todo:
-        make it so 3 of this file can be merged into 1 with 'priority' (aka a,b,c, were a is overriden by b, only if c is not already override that giving stat for a).
-     */
     public LockedVariable<String> mod_id;//the mod id, for cross references. just in case.
     public LockedVariable<Integer> priority;
     public LockedHashMap<String,LockedHashMap<String,HullSettings>> hullSettings = new LockedHashMap<>(false);
@@ -87,9 +84,8 @@ public class ShipGroupSettings {
             }
     };
     public ShipGroupSettings(String mod_id,int priority,JSONObject json){
-        //todo: this is the simple part.
-        //  all it needs to do is get the relevant 'names' and process them into variants and hulls.
         this.priority = new LockedVariable<>(priority,false);
+        this.mod_id = new LockedVariable<>(mod_id,false);
         if (json.containsKey("hull_data")){
             JSONObject json2 = (JSONObject) json.get("hull_data");
             boolean run = false;

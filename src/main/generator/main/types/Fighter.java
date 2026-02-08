@@ -9,14 +9,4 @@ public class Fighter {
         this.fighter_csv = fighter_csv;
         this.priority = priority;
     }
-    public Hull convertToShip(){
-        //todo: make it so this returns a new hull, AKA a converted fighter.
-        //Hull out = new Hull();
-        return null;
-    }
-    public Variant convertToVariant(){
-        //todo: make it so this returns a new varient, AKA a converted fighter
-        //Variant out = new Variant();
-        return null;
-    }
 }

@@ -2,63 +2,114 @@
 
   "buildRestricted": false,
   "spawnRestricted": false,
-  "permaMods": ["base mod a","base mod b"],
-  "tags": ["fake_fighter","base mod b"],
+  "permaMods": ["strikeCraft","armaa_wingCommander"],
+  "tags": ["fake_fighter"],
   "forceExclude": [],
   "ignoreRestrictedStatus": [],
   "forceAllowSpawns": [],
   "forcePreventSpawns": [],
+  "manufacturersForceAutomated": [],#"Remnant","Explorarium","Threat"],
+  "shipsForceAutomated": [],
+  "shipsForceNotAutomated": [],
+  "automateDroneFighters": true,
+  "autoShips_DontCostAutoPoints": false,
   "defaultShipData":{
     "hull_data": {
       "base": {
-        "other": {
-          "perma mods": [
-            "additional mod a",
-            "additional mod b"
+        "perma mods": [
+          "rugged"
+        ],
+        "tags": [
+          "PLAY_FIGHTER_OVERLOAD_SOUNDS"
+        ],
+        "hints": [],
+        "op": 28,
+        "burn": 11,
+        "fuel cap": 0,
+        "cargo cap": 0,
+        "crew cap": 0,
+        "fuel ly": 0.5,
+        "cr-day": 8,
+        "peck cr": 180,
+        "cr loss - sec": 0.25,
+        "cr to deploy": 15,
+        "break prob": 0.5,
+        "min peaces": 1,
+        "max peaces": 2,
+        "fighter bays with base fighter": 1,
+        "fighter bays without base fighter": 0,
+        "dpPerOp": 0.4,
+        "dpFlat": 1,
+        "flux vent multi": 1,
+        "flux vent flat": 0,
+        "flux cap multi": 1,
+        "flux cap flat": 0,
+        "hull multi": 1,
+        "hull flat": 0,
+        "armor multi": 1,
+        "armor flat": 0,
+        "speed multi": 1,
+        "speed flat": 25,
+        "value multi": 1.5,
+        "value flat": 1000,
+        "supplies-rec multi": 0.4,
+        "supplies-rec flat": 1,
+        "supplies-month multi": 0.4,
+        "supplies-month flat": 1,
+        "acceleration multi": 1,
+        "acceleration flat": 50,
+        "deceleration multi": 1,
+        "deceleration flat": 50,
+        ".ship": {
+          "weaponSlots": [
+            {
+              "angle": 0,
+              "arc": 60,
+              "id": "winComGeneratorMount_000",
+              "locations": [
+                -10,
+                0
+              ],
+              "mount": "HIDDEN",
+              "size": "SMALL",
+              "type": "UNIVERSAL"
+            }
           ]
         }
-      },
-      "shielded": {},
-      "phased": {},
-      "undefended": {},
-      "other": {}
+      }
     },
     "variant_data": {
       "base": {
+        "spawnGroup":"combatSmall",
+        "spawnWeight": 0.3,
+        ".variant": {
+          "displayName": "base",
+          "fluxCapacitors": 10,
+          "fluxVents": 10,
+          "goalVariant": true,
+          "hullMods": [
+            "heavyarmor"
+          ],
+          "permaMods": [],
+          "sMods": [],
+          "weaponGroups": []
+        }
       },
-      "shielded": {},
-      "phased": {},
-      "undefended": {},
-      "other": {}
-    }
-  },
-  "manufacturerSettings" : {
-    "Remnant": {
-      "base": {
-        "other": {
-          "perma mods": [
-            "automated"
+      #"shielded": {},
+      #"phased": {},
+      "undefended": {
+        ".variant": {
+          "displayName": "base",
+          "fluxCapacitors": 8,
+          "fluxVents": 7,
+          "goalVariant": true,
+          "hullMods": [
+            "heavyarmor",
+            "frontshield"
           ]
         }
-      }
-    },
-    "Explorarium": {
-      "base": {
-        "other": {
-          "perma mods": [
-            "automated"
-          ]
-        }
-      }
-    },
-    "Threat": {
-      "base": {
-        "other": {
-          "perma mods": [
-            "automated"
-          ]
-        }
-      }
+      },
+      #"other": {}
     }
   },
   "fighterOverride":{

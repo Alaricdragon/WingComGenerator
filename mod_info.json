@@ -9,8 +9,8 @@
 	#"modPlugin":"CaptainsLog.CaptainsLogModPlugin",
 	"dependencies": [
 		{
-			"id": "lw_lazylib",
-			"name": "LazyLib"
+			"id": "armaa",
+			"name": "Arma Armatura"
 		}
 	]
 }

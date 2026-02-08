@@ -22,6 +22,12 @@ public class SeekBaseSettings extends SeekSettings{
         if (json.containsKey("spawnRestricted")){
             Settings.spawnRestricted.set(Boolean.parseBoolean(json.get("spawnRestricted").toString()));
         }
+        if (json.containsKey("automateDroneFighters")){
+            Settings.automateDroneFighters.set(Boolean.parseBoolean(json.get("automateDroneFighters").toString()));
+        }
+        if (json.containsKey("autoShips_DontCostAutoPoints")){
+            Settings.autoShips_DontCostAutoPoints.set(Boolean.parseBoolean(json.get("autoShips_DontCostAutoPoints").toString()));
+        }
     }
 
     @Override
