@@ -45,7 +45,7 @@ public class SeekFactionPaths implements Runnable{
                     addToItem(b,storge);
                     Process_FactionData.factionStorge.get(id2).unlock();
                 }else{
-                    storge = new FactionStorge(id2,path);
+                    storge = new FactionStorge(id2,a);
                     addToItem(b,storge);
 
                     Process_FactionData.factionStorge.put(id2,new LockedVariable<FactionStorge>(storge,false));

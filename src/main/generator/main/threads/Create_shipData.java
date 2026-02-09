@@ -7,6 +7,7 @@ import main.processers.CustomJSonReader;
 import main.settings.*;
 import main.types.HullJson;
 import main.types.MatedFighters;
+import main.types.ShipRoles;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
@@ -43,6 +44,7 @@ public class Create_shipData implements Runnable{
             addShipFile(settings);
             addVariantFile(settings);
             addShipCSV(settings);
+            addShipRoles(settings);
         }catch (Exception e){
             System.err.println("failed to create a ship of ID: "+matedFighter.fighter.fighter_csv.id+" because of exseption \n"+e);
         }
@@ -159,7 +161,7 @@ public class Create_shipData implements Runnable{
         if (Settings.shipsForceNotAutomated.contains(id)) return false;
         if (Settings.shipsForceAutomated.contains(id)) return true;
         if (Settings.manufacturersForceAutomated.contains(manufactuer)) return true;
-        if (!matedFighter.fighter.fighter_csv.tags.isBlank() && matedFighter.fighter.fighter_csv.tags.contains("auto_fighter")) return true;
+        if (Settings.automateDroneFighters.get() && !matedFighter.fighter.fighter_csv.tags.isBlank() && matedFighter.fighter.fighter_csv.tags.contains("auto_fighter")) return true;
         return false;
     }
     private boolean addFreeAutoTag(){
@@ -256,14 +258,22 @@ public class Create_shipData implements Runnable{
         //in theory, I can just... create it now...??????
         //mmmm
     }
+    private void addShipRoles(ChosenShipSettings settings){
+        if (!Settings.forceAllowSpawns.contains(matedFighter.fighter.fighter_csv.id)){
+            if (Settings.forcePreventSpawns.contains(matedFighter.fighter.fighter_csv.id)) return;
+            if (!Settings.spawnRestricted.get() && matedFighter.fighter.fighter_csv.tags.contains("no_drop")) return;
+        }
+        Seeker.roles.add(new ShipRoles(getVariantId(settings),settings.variantSettings.spawnGroup,settings.variantSettings.spawnWeight));
+    }
+
     private String getName(ChosenShipSettings settings){
-        return matedFighter.hull.ship_csv.name+" (WINGCOM)";//NOTE: this needs to be set in addShipFile as well.
+        return Settings.getName(matedFighter.hull.ship_csv);//NOTE: this needs to be set in addShipFile as well.
     }
     private String getHullID(ChosenShipSettings settings){
-        return "WinComGeneratorH_"+matedFighter.hull.ship_csv.id;
+        return Settings.getHullID(matedFighter.fighter.fighter_csv);
     }
     private String getVariantId(ChosenShipSettings settings){
-        return "WinComGeneratorV_"+matedFighter.hull.ship_csv.id;
+        return Settings.getVariantId(matedFighter.fighter.fighter_csv);
     }
     private String getModifiedValue_S_Int(String baseValue,float multi,float flat){
         return getModifiedValue_S_Int(Integer.parseInt(baseValue),multi,flat);

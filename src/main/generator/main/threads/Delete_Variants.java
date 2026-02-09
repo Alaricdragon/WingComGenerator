@@ -14,7 +14,12 @@ public class Delete_Variants implements Runnable{
         //myObj.delete();
 
         File[] fileList = myObj.listFiles();
-        if (fileList == null) return;
+        if (fileList == null){
+            String log = "status (remove old variant files): complete";
+            System.out.println(log);
+            Seeker.finishedClearingData.change(1);
+            return;
+        }
         for( File file : fileList ){
             String filename = file.getName();
             if (filename.endsWith(".variant")){

@@ -25,6 +25,7 @@ public class Seeker {
     public static LockedVariable<Boolean> hasMatedFighters = new LockedVariable<>(false,false);
     public static LockedVariable<Boolean> finishedCreatingPaths = new LockedVariable<>(false,false);
     public static LockedList<Bean_Ship> shipsToPrintToCSV = new LockedList<>(false);
+    public static LockedList<ShipRoles> roles = new LockedList<>(false);
 
     private static ReentrantLock storgeLock = new ReentrantLock(false);
     public static HashMap<String, ModStorge> storge = new HashMap<>();
@@ -83,6 +84,7 @@ public class Seeker {
         new Thread(new Delete_Hulls()).start();
         new Thread(new Delete_Variants()).start();
         new Thread(new Delete_Roles()).start();
+        new Thread(new Delete_Factions()).start();
     }
     public static void repairPaths(){
         new Thread(new Create_Paths()).start();
@@ -429,9 +431,14 @@ public class Seeker {
     public static void createHullCSV() throws InterruptedException {
         System.out.println("started the process of creating the hulls.csv file...");
         Thread a = new Thread(new Create_HullCSV());
+        Thread b = new Thread(new Create_RolesJson());
         a.start();
-        while (a.isAlive()){
-            System.out.println("status (create hull.csv file): 0 / 1");
+        b.start();
+        while (a.isAlive() || b.isAlive()){
+            if (a.isAlive())System.out.println("status (create hull.csv file): 0 / 1");
+            else System.out.println("status (create hull.csv file): 1 / 1");
+            if (b.isAlive())System.out.println("status (create roles.json file): 0 / 1");
+            else System.out.println("status (create roles.json file): 1 / 1");
             Thread.sleep(1000);
         }
         System.out.println("status (create hull.csv file): completed.");

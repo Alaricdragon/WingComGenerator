@@ -10,6 +10,7 @@ public class Create_Paths implements Runnable{
         while (Seeker.finishedClearingData.get() < 4){
             try {
                 Thread.sleep(1000);
+                //System.out.println("waiting for data to clear...");
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }

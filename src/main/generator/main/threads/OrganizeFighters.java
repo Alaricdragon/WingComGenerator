@@ -2,6 +2,7 @@ package main.threads;
 
 import main.processers.MergeListMaster;
 import main.processers.MultiGetArray;
+import main.settings.Settings;
 import main.types.Fighter;
 
 import java.util.ArrayList;
@@ -50,7 +51,7 @@ public class OrganizeFighters implements Runnable{
                 out.remove(a);
                 continue;
             }
-            if (b.fighter_csv.tags.contains("no_drop")) out.remove(a);
+            if (b.fighter_csv.tags.contains("no_drop") && !Settings.buildRestricted.get()) out.remove(a);
         }
         //System.out.println("    2");
         excludeList.unlockList(eid);

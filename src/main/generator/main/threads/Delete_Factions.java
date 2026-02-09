@@ -4,26 +4,26 @@ import main.Seeker;
 
 import java.io.File;
 
-public class Delete_Hulls implements Runnable{
+public class Delete_Factions implements Runnable{
     @Override
     public void run() {
-        System.out.println("status (remove old hull files): stated");
-        File myObj = new File("./data/hulls");
+        System.out.println("status (remove old faction files): stated");
+        File myObj = new File("./data/world/factions");
         File[] fileList = myObj.listFiles();
         if (fileList == null){
-            String log = "status (remove old hull files): complete";
+            String log = "status (remove old faction files): complete";
             System.out.println(log);
             Seeker.finishedClearingData.change(1);
             return;
         }
         for( File file : fileList ){
             String filename = file.getName();
-            if (filename.endsWith(".ship")){
-                File toRemove = new File("./data/hulls/"+filename);
+            if (filename.endsWith(".faction")){
+                File toRemove = new File("./data/world/factions/"+filename);
                 toRemove.delete();
             }
         }
-        String log = "status (remove old hull files): complete";
+        String log = "status (remove old faction files): complete";
         System.out.println(log);
         Seeker.finishedClearingData.change(1);
     }

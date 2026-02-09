@@ -5,6 +5,7 @@ import main.processers.MergeListMaster;
 import main.processers.MultiGetArray;
 import main.types.FactionPaths;
 import main.types.FactionStorge;
+import main.types.MatedFighters;
 import main.types.ModStorge;
 import org.LockedHashMap;
 import org.LockedList;
@@ -17,43 +18,12 @@ import java.util.HashMap;
 public class Process_FactionData implements Runnable{
     @Override
     public void run() {
-
-        /*todo:
-            this has two jobs. first, it creates a second thread to handle 'secondary' operations. this thread will do the following:
-            1: find faction CSV files.
-            2: find faction.json fines.
-            3: organize faction.json files.
-            4: let this thread 'hold' at 'find faction fighters'.
-                -note: I should make it so reorganizeHullAndFighters sets a flag when its done. this process can run parallel.
-                -this lets me move findFactionFighters into the this thread group.
-            5: add the blueprints to the relative factions.
-            6: create the roles.json file.
-            NOTICE: its possable to fail to get the currect variant on certen fighters.
-            as a resalt, I need to wait until -after- fighter mates have been created to create relevent faction and roles.json files.
-
-            yes, this intier process can run paraleal. so it should be fine...?
-         */
-        /*
-
-        */
-        /*possable issues: 1: are faction files always in the same position?*/
-        // faction csv location 'data\world\factions\factions.csv' it finds us the faction files with the 'faction' field. (relitive to the mod)
-        // known fighters: faction file :
-        // "knownFighters":{
-        //		"tags":["rat_abyssals"],
-        //		"fighters":[
-        //		],
-        //	},
-        // all fighters with the right tags are added.
-        // all fighters in the "fighters":[] are added. both are json arrays.
-        clearFactionJsons();
-        clearRolesJson();
+        //clearFactionJsons();
+        //clearRolesJson();
         try {
             findFactionCSV();
             findFactionJSons();
-            findFactionFighters();//only once the merged list is fully ready.
-            createRolesJson();
-            createFactionJsons();
+            findFactionFighters();
         }catch (Exception e){
             System.err.println("EMERGENCY: failure in ProcessFactionData. the generator may still compleat, but ships wont show up without consal commands. \n"+e);
         }
@@ -62,9 +32,9 @@ public class Process_FactionData implements Runnable{
         /*todo:
            1) just remove the 'factions' folder? it should work.... right?
        */
-        File myObj = new File("./data/world/factions");
-        myObj.delete();
-        Seeker.finishedClearingData.change(1);
+        //File myObj = new File("./data/world/factions");
+        //myObj.delete();
+        //Seeker.finishedClearingData.change(1);
     }
     public void clearRolesJson(){
         /* todo:
@@ -133,25 +103,49 @@ public class Process_FactionData implements Runnable{
     }
 
     public void findFactionFighters() throws InterruptedException {
-        while (!Seeker.finishedGettingCoreData() || !Seeker.hasMatedFighters.get()){//this holds this part of the program here, until I have fully gotten the relevant data.
-            Thread.sleep(100);
+        while (!Seeker.finishedGettingCoreData() || !Seeker.hasMatedFighters.get() || Seeker.finishedClearingData.get() < 4){//this holds this part of the program here, until I have fully gotten the relevant data.
+            Thread.sleep(1000);
         }
-        /* todo:
-            1) create 1 Organize_ per faction.
-            2) wait for this to finish
-         */
-    }
-    public void createRolesJson(){
-        /*todo:
-            1) create 1 Create_.
-            this process can run in the background.
-        */
-    }
-    public void createFactionJsons(){
-        /*todo:
-            1) create 1 Create_ per faction.
-            2) wait for this process to finish
-        */
+        System.out.println("started creation of faction files (so factions have acsess to new wingcom ships)");
+        ArrayList<String> idt = new ArrayList<>();
+        ArrayList<ArrayList<String>> tagt = new ArrayList<>();
+        String temp;
+        ArrayList<String> tempList;
+        for (MatedFighters a : Seeker.matedFighters.getListWithLock()){
+            idt.add(a.fighter.fighter_csv.id);
+            tempList = new ArrayList<>();
+            tagt.add(tempList);
+            temp = a.fighter.fighter_csv.tags;
+            if (temp.isBlank())  continue;
+            String[] items = temp.split(",");
+            for (String b : items) {
+                tempList.add(b.trim());
+            }
+        }
+        Seeker.matedFighters.unlock();
+        int size = factionStorge.size();
+        MultiGetArray<String> ids = new MultiGetArray<>(idt,(size / 2) + 1);
+        MultiGetArray<ArrayList<String>> tags = new MultiGetArray<>(tagt,(size / 2) + 1);
+        ThreadGroup pGroup = new ThreadGroup("creating faction json data");
+        for (String a : factionStorge.getListWithLock().keySet()){
+            new Thread(pGroup,new CreateFactionFiles(factionStorge.get(a).get(),ids,tags)).start();
+        }
+        factionStorge.unlock();
+        while (pGroup.activeCount() != 0){
+            System.out.println("status (create faction json files): "+(size-pGroup.activeCount()) + " / "+pGroup.activeCount());
+            Thread.sleep(1000);
+        }
+        String log = "status (create faction json files): Compleat \n found the following fighters inside of each faction:";
+        for (String a : factionStorge.getListWithLock().keySet()){
+            FactionStorge b = factionStorge.get(a).get();
+            if (b.fighters.isEmpty()) continue;
+            log+="\n  "+b.id+"found "+b.fighters.size()+" fighters of Ids: ";
+            for (String c : b.fighters){
+                log+=c+", ";
+            }
+        }
+        factionStorge.unlock();
+        System.out.println(log);
     }
     public static LockedList<FactionPaths> factionPaths = new LockedList<>(false);
     public static LockedHashMap<String, LockedVariable<FactionStorge>> factionStorge = new LockedHashMap<>(false);

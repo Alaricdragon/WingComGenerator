@@ -89,6 +89,15 @@
             }
           ]
         }
+      },
+      "bombers": {
+        "base": {
+          "perma mods": [
+            "rugged",
+            "magazines",
+            "missleracks"
+          ]
+        }
       }
     },
     "variant_data": {

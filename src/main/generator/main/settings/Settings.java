@@ -1,5 +1,7 @@
 package main.settings;
 
+import main.beans.Bean_Fighter;
+import main.beans.Bean_Ship;
 import org.LockedHashMap;
 import org.LockedList;
 import org.LockedVariable;
@@ -40,4 +42,24 @@ public class Settings {
     "forceAllowSpawns": []#ships within this will spawn in fleets
     "forcePreventSpawns": []#ships within this will NOT spawn in fleets.
      */
+
+
+    public static String getName(Bean_Ship ship){
+        return ship.name+" (WINGCOM)";//NOTE: this needs to be set in addShipFile as well.
+    }
+    public static String getHullID(Bean_Fighter fighter){
+        return getHullID(fighter.id);
+    }
+    public static String getHullID(String fighterID){
+        return "WinComGeneratorH_"+fighterID;
+    }
+    public static String getVariantId(Bean_Fighter fighter){
+        return getVariantId(fighter.id);
+    }
+    public static String getVariantId(String fighter){
+        if (fighter.endsWith("_wing")){
+            fighter+="_not";
+        }
+        return "WinComGeneratorV_"+fighter;
+    }
 }

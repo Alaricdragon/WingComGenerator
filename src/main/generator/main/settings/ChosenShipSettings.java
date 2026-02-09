@@ -29,12 +29,12 @@ public class ChosenShipSettings {
         if (d.variantSettings.containsKey("base") && d.variantSettings.get("base").containsKey("base")){
             variantSettings = new VariantSettings(variantSettings,d.variantSettings.get("base").get("base"));
         }
-        if(d.variantSettings.containsKey(def)){
-            if (d.variantSettings.get(def).containsKey("base")){
-                variantSettings = new VariantSettings(variantSettings,d.variantSettings.get(def).get("base"));
+        if(d.variantSettings.containsKey(type)){
+            if (d.variantSettings.get(type).containsKey("base")){
+                variantSettings = new VariantSettings(variantSettings,d.variantSettings.get(type).get("base"));
             }
-            if (d.variantSettings.get(def).containsKey(type)){
-                variantSettings = new VariantSettings(variantSettings,d.variantSettings.get(def).get(type));
+            if (d.variantSettings.get(type).containsKey(def)){
+                variantSettings = new VariantSettings(variantSettings,d.variantSettings.get(type).get(def));
             }
         }
     }
@@ -48,12 +48,12 @@ public class ChosenShipSettings {
         if (d.hullSettings.containsKey("base") && d.hullSettings.get("base").containsKey("base")){
             hullSettings = new HullSettings(hullSettings,d.hullSettings.get("base").get("base"));
         }
-        if(d.hullSettings.containsKey(def)){
-            if (d.hullSettings.get(def).containsKey("base")){
-                hullSettings = new HullSettings(hullSettings,d.hullSettings.get(def).get("base"));
+        if(d.hullSettings.containsKey(type)){
+            if (d.hullSettings.get(type).containsKey("base")){
+                hullSettings = new HullSettings(hullSettings,d.hullSettings.get(type).get("base"));
             }
-            if (d.hullSettings.get(def).containsKey(type)){
-                hullSettings = new HullSettings(hullSettings,d.hullSettings.get(def).get(type));
+            if (d.hullSettings.get(type).containsKey(def)){
+                hullSettings = new HullSettings(hullSettings,d.hullSettings.get(type).get(def));
             }
         }
     }
