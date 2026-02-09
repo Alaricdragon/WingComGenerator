@@ -22,13 +22,12 @@ import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Seeker {
+    public static LockedVariable<Boolean> hasMatedFighters = new LockedVariable<>(false,false);
     public static LockedVariable<Boolean> finishedCreatingPaths = new LockedVariable<>(false,false);
     public static LockedList<Bean_Ship> shipsToPrintToCSV = new LockedList<>(false);
 
     private static ReentrantLock storgeLock = new ReentrantLock(false);
-    private static ReentrantLock factionStorgeLock = new ReentrantLock(false);
     public static HashMap<String, ModStorge> storge = new HashMap<>();
-    public static HashMap<String,FactionStorge> factionStorge = new HashMap<>();
 
     //private static MultiGetArray mods;
     //private static HashMap<String,String> modPaths = new HashMap<>();
@@ -406,6 +405,7 @@ public class Seeker {
             log += "\n  fighter, hull, ship, variant: "+a.fighter.fighter_csv.id+", "+a.hull.ship_csv.id+", "+a.hullJson.json.get("hullId").toString()+", "+a.variant.json.get("variantId").toString();
         }
         matedFighters.unlock();
+        hasMatedFighters.set(true);
         System.out.println(log);
     }
     public static void createFighterSpec() throws InterruptedException {
@@ -455,23 +455,10 @@ public class Seeker {
         getStorgeLock().unlock();
         return storge.get(id);
     }
-    public static void addFactionStorge(String id,FactionStorge storge){
-        getFactionStorgeLock().lock();
-        factionStorge.put(id,storge);
-        getFactionStorgeLock().unlock();
-    }
-    public static FactionStorge getFactionStorge(String id){
-        getFactionStorgeLock().lock();
-        FactionStorge out = factionStorge.get(id);
-        getFactionStorgeLock().unlock();
-        return out;
-    }
+
 
     public static synchronized ReentrantLock getStorgeLock(){
         return storgeLock;
-    }
-    public static synchronized ReentrantLock getFactionStorgeLock(){
-        return factionStorgeLock;
     }
     public static synchronized ReentrantLock getFinalFighters_lock(){
         return finalFighters_lock;
@@ -533,17 +520,6 @@ public class Seeker {
         }finally {
             getModStorge(id).lock.unlock();
         }
-    }
-    public static void addFactionFighters(String id,ArrayList<String> fighters){
-        try {
-            getFactionStorge(id).lock.lock();
-            getFactionStorge(id).fighters = fighters;
-        }catch (Exception e){
-            System.out.println("ERROR in addHullJsons: "+e);
-        }finally {
-            getFactionStorge(id).lock.unlock();
-        }
-
     }
 
 

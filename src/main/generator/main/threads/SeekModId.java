@@ -18,6 +18,7 @@ public class SeekModId implements Runnable{
     }
     @Override
     public void run() {
+        //System.out.println("ID: "+Thread.currentThread().getName()+" 0) starting loop...");
         String id = "";
         try {
             JSONObject b = CustomJSonReader.getObject(path + "/mod_info.json");
@@ -26,7 +27,7 @@ public class SeekModId implements Runnable{
             id = b.get("id").toString();
             if (id.equals("wingcom_generator")) return;
         }catch (Exception e){
-            System.err.println("failed loop for mod: "+path+" of: "+e);
+            //System.err.println("failed loop for mod: "+path+" of: "+e);
             return;
         }
         if (id.isBlank()) return;
@@ -89,7 +90,7 @@ public class SeekModId implements Runnable{
             if (list2.contains(id)) Seeker.addModPath(id, path);
             //System.out.println("ID: "+Thread.currentThread().getName()+" 4)got past the setting");
         }catch (Exception e){
-            //System.err.println(e);
+            System.err.println(e);
         }finally{
             list.unlockList(check);
             //System.out.println("ID: "+Thread.currentThread().getName()+" 5) unlocked...");

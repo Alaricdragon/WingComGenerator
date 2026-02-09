@@ -6,7 +6,9 @@ import main.processers.MultiGetArray;
 import main.types.FactionPaths;
 import main.types.FactionStorge;
 import main.types.ModStorge;
+import org.LockedHashMap;
 import org.LockedList;
+import org.LockedVariable;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -49,8 +51,6 @@ public class Process_FactionData implements Runnable{
         try {
             findFactionCSV();
             findFactionJSons();
-            organizeFactionStorge();
-
             findFactionFighters();//only once the merged list is fully ready.
             createRolesJson();
             createFactionJsons();
@@ -103,11 +103,17 @@ public class Process_FactionData implements Runnable{
             2) wait for this process to finish
         */
         //if (true) return;
-        int size = factionPaths.size();
-        MultiGetArray<FactionPaths> paths = new MultiGetArray<>(factionPaths.getListWithLock(),(factionPaths.size() / 3) + 1);
+        System.out.println("finding faction jsons...");
+        ArrayList<String> pathst = new ArrayList<>();
+        for (FactionPaths a : factionPaths.getListWithLock()){
+            pathst.add(a.path);
+        }
         factionPaths.unlock();
-        ThreadGroup pGroup = new ThreadGroup("find faction jsons");
+        MultiGetArray<String> paths = new MultiGetArray<>(pathst,(factionPaths.size() / 3) + 1);
+        //factionPaths.unlock();
+        ThreadGroup pGroup = new ThreadGroup("find_faction_jsons");
         Seeker.getStorgeLock().lock();
+        int size = Seeker.storge.size();
         for (String a : Seeker.storge.keySet()){
             String b = Seeker.storge.get(a).path;
             new Thread(pGroup,new SeekFactionPaths(b,paths)).start();
@@ -117,32 +123,17 @@ public class Process_FactionData implements Runnable{
             System.out.println("status: (find faction jsons): "+(size-pGroup.activeCount())+" / "+size);
             Thread.sleep(1000);
         }
-        System.out.println("status: (find faction jsons): compleat.");
-        factionPaths.unlock();
+        String log = "status: (find faction jsons): compleat. \n factions with fighters are:";
+        for (String a : factionStorge.getListWithLock().keySet()){
+            FactionStorge b = factionStorge.get(a).get();
+            log += "\n    "+b.id+" has "+b.blueprints_tags.size()+" tags and "+b.blueprints_fighters.size()+" fighter blueprints";
+        }
+        factionStorge.unlock();
+        System.out.println(log);
     }
-    public void organizeFactionStorge(){
-        /*todo:
-            1) create 1 MergeListMaster for this. it should beable to handle this (faction CSVs are probably load order dependant.)
-            -) this will be what creates the FactionStorge files.
-        */
-        if (true) return;
-        MergeListMaster<FactionStorge> merger = new MergeListMaster<FactionStorge>(factionStorge.getListWithLock(),1){
-            @Override
-            public Runnable getRunnable(ArrayList<FactionStorge> listA, ArrayList<FactionStorge> listB, MergeListMaster<FactionStorge> This) {
-                return new OrganizeFactionStorge(listA,listB,This);
-            }
-        };
-        factionPaths.unlock();
-    }
-    public void organizeFactionJsons(){
-        /* todo:
-            1) merge all the 'to add' fighters together. (can I use MergeListMaster here? maybe...)
-            -) no need to worry about overwriting here. they are all merged anyways, not overwriten like others.
-         */
-        //NOTE: unlike other things, faction jsons are added together, effectively. so I dont really need this step? that or I just merge all the lists.
-    }
+
     public void findFactionFighters() throws InterruptedException {
-        while (!Seeker.finishedGettingCoreData()){//this holds this part of the program here, until I have fully gotten the relevant data.
+        while (!Seeker.finishedGettingCoreData() || !Seeker.hasMatedFighters.get()){//this holds this part of the program here, until I have fully gotten the relevant data.
             Thread.sleep(100);
         }
         /* todo:
@@ -163,5 +154,5 @@ public class Process_FactionData implements Runnable{
         */
     }
     public static LockedList<FactionPaths> factionPaths = new LockedList<>(false);
-    public static LockedList<FactionStorge> factionStorge = new LockedList<>(false);
+    public static LockedHashMap<String, LockedVariable<FactionStorge>> factionStorge = new LockedHashMap<>(false);
 }

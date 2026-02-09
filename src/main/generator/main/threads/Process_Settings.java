@@ -30,11 +30,11 @@ public class Process_Settings implements Runnable{
         /*todo: create 1 'SeekBaseSettings'. wait for it to finish, because it is important.*/
         System.out.println("starting to find and process mod settings...");
         ThreadGroup pGroup = new ThreadGroup("Settings_0");
-        new Thread(new SeekBaseSettings("starsector",Integer.MAX_VALUE,"./data/config/WinComGenerator_Settings.json")).start();
+        new Thread(pGroup,new SeekBaseSettings("starsector",Integer.MAX_VALUE,"./data/config/WinComGenerator_Settings.json")).start();
         Seeker.getStorgeLock().lock();
         int size = Seeker.storge.size();
         for (String a : Seeker.storge.keySet()){
-            new Thread(new SeekSettings(a,Seeker.storge.get(a).order,Seeker.storge.get(a).path));
+            new Thread(pGroup,new SeekSettings(a,Seeker.storge.get(a).order,Seeker.storge.get(a).path));
         }
         Seeker.getStorgeLock().unlock();
         while (pGroup.activeCount() != 0){
