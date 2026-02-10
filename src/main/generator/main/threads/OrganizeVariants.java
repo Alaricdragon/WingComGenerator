@@ -7,6 +7,8 @@ import main.types.Variant;
 
 import java.util.ArrayList;
 
+import static main.threads.OrganizeHullJsons.attemptMerging;
+
 public class OrganizeVariants implements Runnable{
     ArrayList<Variant> list;
     ArrayList<Variant> list2;
@@ -25,9 +27,13 @@ public class OrganizeVariants implements Runnable{
             build = true;
             for (Variant b : out){
                 //todo: find if lower 'level' hulls go first?
-                if (id.equals(a.json.get("variantId").toString())&& b.priority > a.priority){
+                if (id.equals(b.json.get("variantId").toString())){
+                    if (b.priority > a.priority){
+                        b.json = attemptMerging(a.json,b.json);
+                    }else{
+                        b.json = attemptMerging(b.json,a.json);
+                    }
                     build = false;
-                    break;
                 }
             }
             if (build) out.add(a);

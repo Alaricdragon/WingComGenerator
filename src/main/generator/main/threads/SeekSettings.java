@@ -7,6 +7,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
+import java.io.IOException;
+
 public class SeekSettings implements Runnable{
     private String modID;//this is keept just in case I need it.
     private String path;
@@ -20,7 +22,7 @@ public class SeekSettings implements Runnable{
     public void run() {
         try {
             processData(CustomJSonReader.getObject(path));
-        } catch (ParseException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

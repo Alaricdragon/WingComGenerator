@@ -1,5 +1,6 @@
 package main.processers;
 
+import main.processers.overrides.StarsectorJsonGetter;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -213,14 +214,30 @@ public class CustomJSonReader {
         Object obj = parser.parse(string.toString());//transformJsonString(string.toString()));
         return (JSONArray) obj;
     }
-    public static JSONObject getObject(String path) throws ParseException {
+    /*public static JSONObject getObject(String path) throws ParseException {
         String string = removeInvalidLines(path);
         JSONParser parser = new JSONParser();
         Object obj = parser.parse(string.toString());//transformJsonString(string.toString()));
         //System.out.println("path of: "+path+" string of: \n"+string);
         return (JSONObject) obj;
+    }*/
+    public static JSONObject getObject(String path) {
+        return StarsectorJsonGetter.getJsonObject(path);
     }
     public static void getObjectLog(String path) {
+        String log = "path of: "+path+" string of: \n";
+        JSONParser parser = new JSONParser();
+        try {
+            JSONObject string = StarsectorJsonGetter.getJsonObject(path);
+            Object obj = parser.parse(string.toJSONString());//transformJsonString(string.toString()));
+        } catch (ParseException e) {
+            System.out.println(log + "\n"+e);
+            //throw new RuntimeException(e);
+        }
+        //return (JSONObject) obj;
+
+    }
+    /*public static void getObjectLog(String path) {
         String string = removeInvalidLines(path);
         String log = "path of: "+path+" string of: \n"+string;
         JSONParser parser = new JSONParser();
@@ -231,7 +248,8 @@ public class CustomJSonReader {
             //throw new RuntimeException(e);
         }
         //return (JSONObject) obj;
-    }
+
+    }*/
     public static String[] getItemsInArray(JSONArray array){
         if (array == null) return new String[0];
         String[] out = new String[array.size()];

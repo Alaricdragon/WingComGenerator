@@ -26,12 +26,18 @@ public class SeekHulls implements Runnable{
         ArrayList<Hull> out = new ArrayList<>();
         //todo: process hullCSV here.
         try {
+            System.out.println(Thread.currentThread().getName()+": attempting to get hulls from mod : path of: "+mod+","+path);
             List<Bean_Ship> beans = new CsvToBeanBuilder(new FileReader(path+"/data/hulls/ship_data.csv")).withType(Bean_Ship.class).build().parse();
             for (Bean_Ship a : beans) if (a.isValid()) out.add(new Hull(a,priority));
         } catch (FileNotFoundException e) {
+            //System.err.println(Thread.currentThread().getName()+"failed to get hulls from path of: "+path+". reason: "+e);
             //System.err.println("failed to get hull. reason: "+e);
             //throw new RuntimeException(e);
             return;
+        }catch (Exception e){
+            System.err.println(Thread.currentThread().getName()+": failed to get hulls from from mod : path of: "+mod+","+path+" \n reason: "+e);
+            throw e;
+            //return;
         }
         //System.out.println("get hulls. yay.");
         Seeker.addHulls(mod,out);

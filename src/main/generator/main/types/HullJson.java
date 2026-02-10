@@ -9,4 +9,10 @@ public class HullJson {
         this.json = json;
         this.priority = priority;
     }
+    public String path;
+    public HullJson(JSONObject json,String path,int priority) {
+        this.json = json;
+        this.priority = priority;
+        this.path = path;
+    }
 }

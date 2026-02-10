@@ -7,6 +7,7 @@ import main.processers.CustomJSonReader;
 import main.settings.Settings;
 import main.threads.*;
 import main.types.*;
+import org.LockedHashMap;
 import org.LockedInteger;
 import org.LockedList;
 import org.LockedVariable;
@@ -26,6 +27,9 @@ public class Seeker {
     public static LockedVariable<Boolean> finishedCreatingPaths = new LockedVariable<>(false,false);
     public static LockedList<Bean_Ship> shipsToPrintToCSV = new LockedList<>(false);
     public static LockedList<ShipRoles> roles = new LockedList<>(false);
+
+    public static LockedHashMap<String,ArrayList<HullJson>> incompleatShipJsons = new LockedHashMap<>(false);
+    public static LockedHashMap<String,ArrayList<Variant>> incompleatVariants = new LockedHashMap<>(false);
 
     private static ReentrantLock storgeLock = new ReentrantLock(false);
     public static HashMap<String, ModStorge> storge = new HashMap<>();
@@ -55,11 +59,24 @@ public class Seeker {
 
     public static void runAllSeekers() throws IOException, ParseException, InterruptedException {
         /*todo: what is left?
-        *  1: creating the faction files (aka adding ships into the world)
-        *  2: getting all ships that are 'automated' in the modverse so I can stop being scared of getting that wrong
-        *  3: getting all ships from armma armada that should NOT be included in this, because there are a few that are already strike craft.
-        *  4: make sure this works on larger mod lists
-        *  5: make sure the mod 'order'/'priority' is currect, beccause it might not be.*/
+            1: it is possable for .ship and .variant files to override items inside of a ship, but only one at a time.
+             basicly, incompleat overriding. just like what I do.
+             also, weapon mounts can be overriden by ID. I can only guess its possable to mess that up with other things two.
+            so:
+                ...
+                I am overthinking this.
+                in OrganizeHullJsons and organizeVariants, I can just 'merge' the relevant data there.
+                all data is already saved, so it should be fine I think?
+                I hope.
+                ...
+                how merging works:
+                1: any 'base' item (hullmods, or what have you) overwrites.
+                2: any jsonObject with an 'id' in it overwrites -only thing that exsist. effectivly, acting as its own system.
+                   -please note, do to my new json sorter, I can tell if something is a jsonObject or not. so any jsonObject with an 'id' in it. (provided that item does not also have an ID in it and is a json object).
+                ...
+                testing:
+                download emergent threats. that will handle the tests. it should work hopefully? I hope? HLEsfdkdaslds
+            5: make sure the mod 'order'/'priority' is currect, beccause it might not be.*/
 
         clearOldFiles();
         repairPaths();
@@ -115,7 +132,7 @@ public class Seeker {
         }
         Seeker.addModPath("starsector", "../../starsector-core");
         System.out.println("status: compleat. mods valid:");
-        for (String a : storge.keySet()) System.out.println("   "+a);
+        for (String a : storge.keySet()) System.out.println("   "+a+" : "+storge.get(a).path);
     }
     public static void findSettings(){
         new Thread(new Process_Settings()).start();

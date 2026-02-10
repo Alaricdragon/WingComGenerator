@@ -41,9 +41,13 @@ public class Create_shipData implements Runnable{
         //String cn = c == null ? "_" : c.mod_id.get();
         //System.out.println(matedFighter.fighter.fighter_csv.id+" got items of a,b,c: "+an+", "+bn+", "+cn);
         try {
+            //System.out.println("id: "+matedFighter.fighter.fighter_csv.id+" 0.0");
             addShipFile(settings);
+            //System.out.println("id: "+matedFighter.fighter.fighter_csv.id+" 1.0");
             addVariantFile(settings);
+            //System.out.println("id: "+matedFighter.fighter.fighter_csv.id+" 2.0");
             addShipCSV(settings);
+            //System.out.println("id: "+matedFighter.fighter.fighter_csv.id+" 3.0");
             addShipRoles(settings);
         }catch (Exception e){
             System.err.println("failed to create a ship of ID: "+matedFighter.fighter.fighter_csv.id+" because of exseption \n"+e);
@@ -114,13 +118,15 @@ public class Create_shipData implements Runnable{
         out.put("builtInWings",array);
 
         //reorganize 'out' weapons into being 1: built in, and 2: holding the relevent wepon inside of iteself.
-        array = (JSONArray) out.get("weaponSlots");
-        for (Object b : array){
-            JSONObject c = (JSONObject) b;
-            if (c.get("type").toString().equals("DECORATIVE")){
-                //... do nothing
-            }else {
-                c.put("type", "BUILT_IN");
+        if (out.containsKey("weaponSlots")) {
+            array = (JSONArray) out.get("weaponSlots");
+            for (Object b : array) {
+                JSONObject c = (JSONObject) b;
+                if (c.get("type").toString().equals("DECORATIVE")) {
+                    //... do nothing
+                } else {
+                    c.put("type", "BUILT_IN");
+                }
             }
         }
 
@@ -276,6 +282,7 @@ public class Create_shipData implements Runnable{
         return Settings.getVariantId(matedFighter.fighter.fighter_csv);
     }
     private String getModifiedValue_S_Int(String baseValue,float multi,float flat){
+        if (baseValue.isBlank()) return ""+flat;
         return getModifiedValue_S_Int(Integer.parseInt(baseValue),multi,flat);
     }
     private String getModifiedValue_S_Int(int baseValue,float multi,float flat){

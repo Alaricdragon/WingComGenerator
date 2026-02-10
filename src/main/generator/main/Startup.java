@@ -1,5 +1,7 @@
 package main;
 
+import main.processers.CustomJSonReader;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
 import java.awt.*;
@@ -29,20 +31,28 @@ public class Startup {
         Main.main(new String[0]);
     }/**/
     /**/public static void main(String[] args) throws Exception {
-        if (System.console() == null) {
-            String jarPath = Startup.class.getProtectionDomain().getCodeSource().getLocation().toString().substring(6);
-            //issues: this cannot comprehend spaces.
-            System.out.println("running checking path...");
-            jarPath = jarPath.replaceAll("%20"," ");
-            System.out.println("got path as: "+jarPath);
-            if (System.getProperty("os.name").toLowerCase().contains("mac")) {
-                Runtime.getRuntime().exec(new String[]{
-                        "osascript", "-e",
-                        "tell application \"Terminal\" to do script \"java -jar '" + jarPath + "'\""
-                });
-            } else if (System.getProperty("os.name").toLowerCase().contains("win")) {
-                Runtime.getRuntime().exec("cmd /c start cmd /k java -jar \"" + jarPath + "\"");
+        try {
+            if (System.console() == null) {
+                String jarPath = Startup.class.getProtectionDomain().getCodeSource().getLocation().toString().substring(6);
+                //issues: this cannot comprehend spaces.
+                System.out.println("running checking path...");
+                jarPath = jarPath.replaceAll("%20", " ");
+                System.out.println("got path as: " + jarPath);
+                if (System.getProperty("os.name").toLowerCase().contains("mac")) {
+                    Runtime.getRuntime().exec(new String[]{
+                            "osascript", "-e",
+                            "tell application \"Terminal\" to do script \"java -jar '" + jarPath + "'\""
+                    });
+                } else if (System.getProperty("os.name").toLowerCase().contains("win")) {
+                    Runtime.getRuntime().exec("cmd /c start cmd /k java -jar \"" + jarPath + "\"");
+                }
             }
+        }catch (Exception e){
+            JSONObject out = new JSONObject();
+            out.put("error of:",e.toString());
+            out.put("time of: ",System.currentTimeMillis());
+            CustomJSonReader.writeJsonFile("failedToRun.json",out);
+            throw e;
         }
         System.out.println("running data...");
         Main.main(new String[0]);

@@ -9,4 +9,10 @@ public class Variant {
         this.json = json;
         this.priority = priority;
     }
+    public String path;
+    public Variant(JSONObject json,String path,int priority){
+        this.json = json;
+        this.priority = priority;
+        this.path = path;
+    }
 }

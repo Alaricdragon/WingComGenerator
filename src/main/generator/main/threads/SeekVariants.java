@@ -9,6 +9,7 @@ import org.json.simple.parser.ParseException;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class SeekVariants implements Runnable{
     private String mod;
@@ -75,9 +76,23 @@ public class SeekVariants implements Runnable{
         filePaths.removeFirst();
         try {
             JSONObject json = CustomJSonReader.getObject(path);
+            String savedPath = path.replaceFirst(path,"");
+            if (!json.containsKey("variantId")){
+                HashMap<String, ArrayList<Variant>> a = Seeker.incompleatVariants.getListWithLock();
+                if (a.containsKey(savedPath)){
+                    ArrayList<Variant> b = new ArrayList<>();
+                    b.add(new Variant(json,savedPath,priority));
+                    a.put(savedPath, b);
+                }else{
+                    a.get(savedPath).add(new Variant(json,savedPath,priority));
+                }
+                Seeker.incompleatShipJsons.unlock();
+                return null;
+            }
             String id = json.get("variantId").toString();
-            if (list.contains(id)) return new Variant(json,priority);
-        } catch (ParseException e) {
+            if (list.contains(id)) return new Variant(json,savedPath,priority);
+        } catch (Exception e) {
+            System.err.println("failed to get variant from path of "+path);
             throw new RuntimeException(e);
         }
         return null;

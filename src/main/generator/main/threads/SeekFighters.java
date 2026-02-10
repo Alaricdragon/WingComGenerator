@@ -30,12 +30,16 @@ public class SeekFighters implements Runnable{
 
         */
         try {
+            System.out.println(Thread.currentThread().getName()+": attempting to get fighters from mod : path of: "+mod+", "+path);
             List<Bean_Fighter> beans = new CsvToBeanBuilder(new FileReader(path+"/data/hulls/wing_data.csv")).withType(Bean_Fighter.class).build().parse();
             for (Bean_Fighter a : beans) if (a.isValid()) out.add(new Fighter(a,priority));
         } catch (FileNotFoundException e) {
-            //System.err.println("failed to get fighter. reason: "+e);
+            //System.err.println("failed to get fighter from path of: "+path+". reason: "+e);
             return;
             //throw new RuntimeException(e);
+        }catch (Exception e){
+            System.err.println(Thread.currentThread().getName()+": failed to get fighters from mod : path of: "+mod+", "+path+" \n reason: "+e);
+            throw e;
         }
         //System.out.println("get fighters. yay.");
         Seeker.addFighters(mod,out);

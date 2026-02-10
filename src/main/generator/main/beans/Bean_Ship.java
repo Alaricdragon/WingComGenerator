@@ -133,7 +133,7 @@ public class Bean_Ship {
         if (this.startsWith("#")) return false;*/
         return true;
     }
-    @CsvBindByName(column = "name")
+    @CsvBindByName(column = "name",required = false)
     public String name = "";
     @CsvBindByName(column = "id")
     public String id = "";
