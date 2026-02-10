@@ -1,0 +1,15 @@
+how to use this mod:
+1: move this mod into your starsector mods folder
+2: enable all mods you wish to make (wingcom) units out of fighters.
+3: (advanced) go into data/config/WinComGenerator_Settings.json and edit the relevant setting (see the readme there for details.)
+4: (advanced) if you dont want this to relly on armma armada, go into the settings and replace the "permaMods" item with "permaMods":[], you can then edit the mod_info.json to no longer have the dependency
+4: run the WinComGenerator.jar
+5: wait for this to finish.
+6: play starsector.
+
+features:
+1: generates new hulls for 'wingcom' ship. they are fighters but they are not bound to carriers, acting as ships instead.
+2: generates all the required data to add the newly created 'wingcom' ships to your game. factions will use and sell 'wingcom' ships, if said faction has the fighter blueprint the 'wingcom' unit was based off of.
+3: advanced and very specific settings for generating 'wingcom' ships. decide what you want on a ship by ship basis, or by manufacturer, or by fighter type. or all sorts of things.
+4: probably a lot of crashes because I try my best ok??? please report any issues, I will do my best to handle them.
+-) note: by default, this program will not create 'wingcom' units for fighters the player will not beable to use (such as the tempest termination drone). there is a setting to disable this restriction. if you use it, what happens is on you. use the 'forceAllowSpawns' and 'ignoreRestrictedStatus' with your fighters id instead. unless you are crazy.
