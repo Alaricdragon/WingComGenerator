@@ -1,0 +1,13 @@
+{
+    "masterVersionFile":"https://raw.githubusercontent.com/Alaricdragon/WingComGenerator/master/WingComGenerator.version",
+    "modName":"WingComGenerator",
+    "modThreadId":22261,
+    "modVersion":
+    {
+        "major":0,
+        "minor":0,
+        "patch":"1"
+    },
+	"starsectorVersion":"0.98a",
+	"directDownloadURL":"https://github.com/Alaricdragon/WingComGenerator/archive/refs/heads/master.zip",
+}
