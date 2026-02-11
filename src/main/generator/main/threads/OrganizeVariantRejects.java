@@ -1,17 +1,17 @@
 package main.threads;
 
-import main.Seeker;
 import main.processers.MultiGetArray;
 import main.types.HullJson;
+import main.types.Variant;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 
-public class OrganizeHullJsonRejects implements Runnable{
-    private HullJson main;
+public class OrganizeVariantRejects implements Runnable{
+    private Variant main;
     private MultiGetArray<String> path;
-    MultiGetArray<ArrayList<HullJson>> finders;
-    public OrganizeHullJsonRejects(HullJson main, MultiGetArray<String> path, MultiGetArray<ArrayList<HullJson>> finders){
+    MultiGetArray<ArrayList<Variant>> finders;
+    public OrganizeVariantRejects(Variant main, MultiGetArray<String> path, MultiGetArray<ArrayList<Variant>> finders){
         //......
         //
         //todo: run this again for variants. I think I made a variant rejects.
@@ -25,14 +25,14 @@ public class OrganizeHullJsonRejects implements Runnable{
 
         int id = path.getAndReserveListID();
         ArrayList<String> list = path.getList(id);
-        ArrayList<HullJson> organized = new ArrayList<>();
+        ArrayList<Variant> organized = new ArrayList<>();
         for (int a = 0; a < list.size(); a++){
             if (list.get(a).equals(p)){
                 int id2 = finders.getAndReserveListID();
-                ArrayList<HullJson> list2 = finders.getList(id2).get(a);
-                //HullJson active = list2.get(0);
+                ArrayList<Variant> list2 = finders.getList(id2).get(a);
+                //Variant active = list2.get(0);
                 for (int c = 0; c < list2.size(); c++){
-                    HullJson active2 = list2.get(c);
+                    Variant active2 = list2.get(c);
                     if (organized.isEmpty()){
                         organized.add(active2);
                         continue;
@@ -57,9 +57,9 @@ public class OrganizeHullJsonRejects implements Runnable{
         }
         path.unlockList(id);
         if (organized.isEmpty()) return;
-        System.out.println("merging a single file for a ship of id: "+main.json.get("hullId")+" with a path of: "+main.path);
+        System.out.println("merging a single file for a variant of hull id: "+main.json.get("hullId")+" with a path of: "+main.path);
         JSONObject f = new JSONObject();
-        for (HullJson a : organized){
+        for (Variant a : organized){
             if (a.priority < main.priority){
                 OrganizeHullJsons.attemptMerging(f,main.json);
                 //break;//no break because I need to add both.

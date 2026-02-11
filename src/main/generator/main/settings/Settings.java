@@ -25,6 +25,7 @@ public class Settings {
 
     /// mods to always be added to every hull file, regardless of context.
     public static final LockedList<String> permaMods = new LockedList<>(false);
+    public static final LockedList<String> permaMods_ifBaseFighter = new LockedList<>(false);
     public static final LockedList<String> tags = new LockedList<>(false);
     public static final LockedList<String> hints = new LockedList<>(false);
     public static final LockedList<String> forceExclude = new LockedList<>(false);
@@ -34,6 +35,10 @@ public class Settings {
     public static final LockedList<String> manufacturersForceAutomated = new LockedList<>(false);
     public static final LockedList<String> shipsForceAutomated = new LockedList<>(false);
     public static final LockedList<String> shipsForceNotAutomated = new LockedList<>(false);
+
+    public static final LockedHashMap<String,String> swapHullMods = new LockedHashMap<>(false);
+    public static final LockedHashMap<String,String> fighterTagsToHullTags = new LockedHashMap<>(false);
+    public static final LockedHashMap<String,String> fighterTagsToHullHints = new LockedHashMap<>(false);
     /*
     "permaMods": [] #hullmods that will always be added to all generated fighters as a perma mod
     "tags": [] #tags that will be always be added to all generated fighters
@@ -44,8 +49,8 @@ public class Settings {
      */
 
 
-    public static String getName(Bean_Ship ship){
-        return ship.name+" (WINGCOM)";//NOTE: this needs to be set in addShipFile as well.
+    public static String getName(ChosenShipSettings settings,Bean_Ship ship){
+        return settings.hullSettings.hullName.replaceFirst("%s",ship.name);//NOTE: this needs to be set in addShipFile as well.
     }
     public static String getHullID(Bean_Fighter fighter){
         return getHullID(fighter.id);

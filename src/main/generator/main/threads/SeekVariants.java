@@ -76,7 +76,7 @@ public class SeekVariants implements Runnable{
         filePaths.removeFirst();
         try {
             JSONObject json = CustomJSonReader.getObject(path);
-            String savedPath = path.replaceFirst(path,"");
+            String savedPath = this.path.replaceFirst(path,"");
             if (!json.containsKey("variantId")){
                 HashMap<String, ArrayList<Variant>> a = Seeker.incompleatVariants.getListWithLock();
                 if (a.containsKey(savedPath)){

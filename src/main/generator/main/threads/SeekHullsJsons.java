@@ -65,7 +65,7 @@ public class SeekHullsJsons implements Runnable{
         filePaths.removeFirst();
         try {
             JSONObject json = CustomJSonReader.getObject(path);
-            String savedPath = path.replaceFirst(path,"");
+            String savedPath = path.replaceFirst(this.path,"");
             if (!json.containsKey("hullId")){
                 //HOW THE FUCK AM I SUPPOSE TO DEAL WITH THIS??? KEEP THE PATH OF ALL FOUND SHIPS??? WHAT THE FUCK IS THE MATTER WITH THIS FUCKING THING. WHY IS IT LIKE THIS???? HOW DOES IT DETERMIN PATHS?!?!?!?!?!?!?!
                 //FOR REAL THOUGH, WHAT THE FUCK AM I SUPPOSE TO DO ABOUT THIS????

@@ -19,7 +19,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Seeker {
@@ -88,9 +87,11 @@ public class Seeker {
         //ThreadGroup factionFighters = findFactionFighters(factionFinder);
         findVariantFiles();
         reorganizeVariants();
+        mergeUnidedVariantFiles();
         reorganizeValidHulls2();
         findHullFiles();
         reorganizeHullJsons();
+        mergeUnidedHullFiles();
         mateFightersToHullsAndVariants();
         //applyFightersToFactions(factionFighters);
         createFighterSpec();
@@ -288,6 +289,37 @@ public class Seeker {
         System.out.println("status: completed. trimmed variants from "+listSize+" to "+ finalVariants.size());
         getFinalVariants_lock().unlock();
     }
+    public static void mergeUnidedVariantFiles() throws InterruptedException {
+        //if (true) return;//skip this for a test.
+        System.out.println("adding in missing variant data from mods overriding small parts of .variant files");
+        ThreadGroup pGroup = new ThreadGroup("mergeUnidedVariantFiles");
+        ArrayList<String> paths_t = new ArrayList<>();
+        ArrayList<ArrayList<Variant>> jsons_t = new ArrayList<>();
+        for (String a : incompleatVariants.getListWithLock().keySet()){
+            paths_t.add(a);
+            jsons_t.add(incompleatVariants.get(a));
+            //System.out.println("HERE: adding a bit of data...");
+        }
+        incompleatVariants.unlock();
+        int size = finalVariants.size();
+        int missingItems = paths_t.size();
+        if (missingItems == 0){
+            System.out.println("status (adding variant data): ignored. no overriding .variant files found (without ids to identify them)");
+        }
+        MultiGetArray<String> paths = new MultiGetArray<>(paths_t,(size / 2) + 1);
+        MultiGetArray<ArrayList<Variant>> jsons = new MultiGetArray<>(jsons_t,(size / 2) + 1);
+        for (Variant a : finalVariants.getListWithLock()){
+            new Thread(pGroup,new OrganizeVariantRejects(a,paths,jsons)).start();
+        }
+        finalVariants.unlock();
+        while (pGroup.activeCount() != 0){
+            System.out.println("status (adding missing variant data): "+(size - pGroup.activeCount()) +" / "+size);
+            Thread.sleep(1000);
+        }
+        String log = "status (adding missing variant data): compleat. found and merged "+missingItems+" items into "+size+" .ship files";
+        System.out.println(log);
+
+    }
     public static void reorganizeValidHulls2() throws InterruptedException {
         System.out.println("timing hulls from csv so only ones required by fighters exist...");
         getFinalHulls_lock().lock();
@@ -395,6 +427,36 @@ public class Seeker {
         }
         System.out.println(log);
         finalHullJson.set(contoler.getFinalLists());
+    }
+    public static void mergeUnidedHullFiles() throws InterruptedException {
+        //if (true) return;//skip this for a test.
+        System.out.println("adding in missing hull data from mods overriding small parts of .ship files");
+        ThreadGroup pGroup = new ThreadGroup("mergeUnidedHullFiles");
+        ArrayList<String> paths_t = new ArrayList<>();
+        ArrayList<ArrayList<HullJson>> jsons_t = new ArrayList<>();
+        for (String a : incompleatShipJsons.getListWithLock().keySet()){
+            paths_t.add(a);
+            jsons_t.add(incompleatShipJsons.get(a));
+        }
+        incompleatShipJsons.unlock();
+        int size = finalHullJson.size();
+        int missingItems = paths_t.size();
+        if (missingItems == 0){
+            System.out.println("status (adding missing hull data): ignored. no overriding .ship files found (without ids to identify them)");
+        }
+        MultiGetArray<String> paths = new MultiGetArray<>(paths_t,(size / 2) + 1);
+        MultiGetArray<ArrayList<HullJson>> jsons = new MultiGetArray<>(jsons_t,(size / 2) + 1);
+        for (HullJson a : finalHullJson.getListWithLock()){
+            new Thread(pGroup,new OrganizeHullJsonRejects(a,paths,jsons)).start();
+        }
+        finalHullJson.unlock();
+        while (pGroup.activeCount() != 0){
+            System.out.println("status (adding missing hull data): "+(size - pGroup.activeCount()) +" / "+size);
+            Thread.sleep(1000);
+        }
+        String log = "status (adding missing hull data): compleat. found and merged "+missingItems+" items into "+size+" .ship files";
+        System.out.println(log);
+
     }
     public static void mateFightersToHullsAndVariants() throws InterruptedException {
         System.out.println("started to pair hull, ship, and variant data...");

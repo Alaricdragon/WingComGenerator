@@ -63,21 +63,38 @@ public class OrganizeHullJsons implements Runnable{
                     JSONObject p_json;
                     JSONObject s_json;
                     JSONArray s_array = (JSONArray) secondary.get(p_key);
+                    if (s_array.isEmpty()) continue;
                     JSONObject n_json;
+                    //this looks for items of the same ID.
+                    //this intier loop is organized backwards. it should be looking at secondary array instead of primary. I think.
+                    ArrayList<Boolean> exists = new ArrayList<>();
+                    for (int z = 0; z < s_array.size(); z++) exists.add(false);
                     for (int a = 0; a < p_array.size(); a++){
                         Object t = p_array.get(a);
                         if (!(t instanceof JSONObject)) continue;
                         p_json = (JSONObject) p_array.get(a);
                         for (int b = 0; b < s_array.size(); b++){
                             t = s_array.get(b);
-                            if (!(t instanceof JSONObject)) continue;
-                            s_json = (JSONObject) s_array.get(a);
+                            if (!(t instanceof JSONObject)){
+                                exists.set(b,true);
+                                continue;
+                            }
+                            s_json = (JSONObject) t;
                             if (p_json.containsKey("id") && s_json.containsKey("id") && s_json.get("id").toString().equals(p_json.get("id").toString())){
                                 n_json = attemptMerging(p_json,s_json);
                                 p_array.set(a,n_json);
+                                exists.set(b,true);
                                 break;
                             }
                         }
+                    }
+                    for (int b = 0; b < exists.size(); b++){
+                        if (exists.get(b)) continue;
+                        Object t = s_array.get(b);
+                        if (!(t instanceof JSONObject) || !(((JSONObject) t).containsKey("id"))){
+                            continue;
+                        }
+                        p_array.add(t);
                     }
                 }
                 continue;
@@ -95,7 +112,8 @@ public class OrganizeHullJsons implements Runnable{
         while (keySet.hasNext()){
             Object s_key = keySet.next();
             if (!primary.containsKey(s_key)){
-                secondary.put(s_key.toString(),secondary.get(s_key.toString()));
+                primary.put(s_key.toString(),secondary.get(s_key.toString()));
+                //System.out.println("adding a new item form that thing of key: "+s_key.toString()+" of data: "+secondary.get(s_key.toString()));
             }
         }
 

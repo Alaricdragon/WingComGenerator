@@ -2,7 +2,8 @@
 
   "buildRestricted": false,
   "spawnRestricted": false,
-  "permaMods": ["strikeCraft","armaa_wingCommander"],
+  "permaMods": ["strikeCraft"],
+  "permaMods_ifBaseFighter": ["armaa_wingCommander"],
   "tags": ["fake_fighter"],
   "forceExclude": [
     "armaa_kouto_wing",
@@ -24,11 +25,23 @@
   "manufacturersForceAutomated": [],#"Remnant","Explorarium","Threat"],
   "shipsForceAutomated": [],
   "shipsForceNotAutomated": [],
+  "fighterTagsToHullTags": {
+    "restricted": "restricted",
+    "no_sell": "no_sell"
+  },
+  "fighterTagsToHullHints": {
+    "no_drop": "UNBOARDABLE"
+  },
+  "swapHullMods": {
+    "no_weapon_flux": "",#lets (wingcom) units have flux management.
+    "rat_exogrid": ""#RAT combatability
+  },
   "automateDroneFighters": true,
   "autoShips_DontCostAutoPoints": false,
   "defaultShipData":{
     "hull_data": {
       "base": {
+        "hullName": "%s (WINGCOM)",
         "perma mods": [
           "rugged"
         ],
@@ -51,7 +64,7 @@
         "max peaces": 2,
         "fighter bays with base fighter": 1,
         "fighter bays without base fighter": 0,
-        "dpPerOp": 0.4,
+        "dpPerOp": 0.33,
         "dpFlat": 1,
         "flux vent multi": 1,
         "flux vent flat": 0,
@@ -103,7 +116,7 @@
     "variant_data": {
       "base": {
         "spawnGroup":"combatSmall",
-        "spawnWeight": 0.3,
+        "spawnWeight": 1,
         ".variant": {
           "displayName": "base",
           "fluxCapacitors": 10,

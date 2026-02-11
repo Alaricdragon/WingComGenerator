@@ -18,6 +18,7 @@ public class HullSettings {
     public ArrayList<String> tags = new ArrayList<>();
     public ArrayList<String> perma_hullmods = new ArrayList<>();
     public ArrayList<String> hints = new ArrayList<>();
+    public String hullName="";
     public int baseFighters = -9999;
     public int emptyFighters = -9999;
     public int op = -9999;
@@ -96,6 +97,7 @@ public class HullSettings {
         decelerationM = getJSonOrNull(json,"deceleration multi");
         decelerationF = getJSonOrNull(json,"deceleration flat");
         crToDeploy = (int) getJSonOrNull(json,"cr to deploy");
+        hullName = getJSonOrNullString(json,"hullName");
         //crToDeployM = getJSonOrNull(json,"cr to deploy multi");
         //crToDeployF = getJSonOrNull(json,"cr to deploy flat");
 
@@ -124,6 +126,10 @@ public class HullSettings {
     private float getJSonOrNull(JSONObject json,String key){
         if (!json.containsKey(key)) return -9999;
         return Float.parseFloat(json.get(key).toString());
+    }
+    private String getJSonOrNullString(JSONObject json,String key){
+        if (!json.containsKey(key)) return "";
+        return json.get(key).toString();
     }
     /// creates a empty hull settings. usefull for one math eq.
     public HullSettings(){
@@ -174,7 +180,9 @@ public class HullSettings {
         //crToDeployM = canUse(b.crToDeployF) ? b.crToDeployF :a.crToDeployF;
         //crToDeployF = canUse(b.crToDeployF) ? b.crToDeployF :a.crToDeployF;
         json = canUse(b.json) ? b.json : a.json;
+        hullName = canUse(b.hullName) ? b.hullName : a.hullName;
     }
+    public boolean canUse(String in){return !in.isBlank();}
     private boolean canUse(ArrayList<String> in){
         return !in.isEmpty();
     }

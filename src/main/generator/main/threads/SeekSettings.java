@@ -150,6 +150,10 @@ public class SeekSettings implements Runnable{
             JSONArray array = (JSONArray) json.get("permaMods");
             for (String a : CustomJSonReader.getItemsInArray(array)) Settings.permaMods.add(a);
         }
+        if (json.containsKey("permaMods_ifBaseFighter")){
+            JSONArray array = (JSONArray) json.get("permaMods_ifBaseFighter");
+            for (String a : CustomJSonReader.getItemsInArray(array)) Settings.permaMods_ifBaseFighter.add(a);
+        }
         if (json.containsKey("tags")){
             JSONArray array = (JSONArray) json.get("tags");
             for (String a : CustomJSonReader.getItemsInArray(array)) Settings.tags.add(a);
@@ -188,6 +192,18 @@ public class SeekSettings implements Runnable{
             for (String a : CustomJSonReader.getItemsInArray(array)) Settings.shipsForceNotAutomated.add(a);
         }
 
+        if (json.containsKey("swapHullMods")){
+            JSONObject json2 = (JSONObject) json.get("swapHullMods");
+            for (Object a : json2.keySet()) Settings.swapHullMods.put(a.toString(),json2.get(a.toString()).toString());
+        }
+        if (json.containsKey("fighterTagsToHullTags")){
+            JSONObject json2 = (JSONObject) json.get("fighterTagsToHullTags");
+            for (Object a : json2.keySet()) Settings.fighterTagsToHullTags.put(a.toString(),json2.get(a.toString()).toString());
+        }
+        if (json.containsKey("fighterTagsToHullHints")){
+            JSONObject json2 = (JSONObject) json.get("fighterTagsToHullHints");
+            for (Object a : json2.keySet()) Settings.fighterTagsToHullHints.put(a.toString(),json2.get(a.toString()).toString());
+        }
 
         processDefaultShipData(json);
 

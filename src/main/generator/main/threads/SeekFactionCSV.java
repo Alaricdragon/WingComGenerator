@@ -23,7 +23,7 @@ public class SeekFactionCSV implements Runnable{
     @Override
     public void run() {
         try {
-            List<Bean_Faction> beans = new CsvToBeanBuilder(new FileReader(path+"/data/world/factions/factions.csv")).withType(Bean_Faction.class).build().parse();
+            List<Bean_Faction> beans = new CsvToBeanBuilder(new FileReader(path+"/data/world/factions/factions.csv")).withType(Bean_Faction.class).withIgnoreEmptyLine(true).build().parse();
             for (Bean_Faction a : beans){
                 if (a.faction.startsWith("#")) continue;
                 if (a.faction.isBlank()) continue;

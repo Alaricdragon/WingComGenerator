@@ -7,15 +7,19 @@ base settings:
 addable settings:
     settings here can be added to from any mod with the WinComGenerator_Settings.json
     settings here are not overwritten, but instead merged together.
-    "permaMods" hullmods added to all .ship files, regardless of other settings.
-    "tags" tags added to all ship.csv files, regardless of other settings.
-    "forceExclude" fighters that will be forcefully -not generated-
-    "ignoreRestrictedStatus" fighters that will be allowed to generate, even though they would normally be prevented from doing so.
-    "forceAllowSpawns" fighters that would be allowed to spawn in fleets, even though they normally would be prevented from doing so
-    "forcePreventSpawns" forcefully prevents fighters from spawning in fleets, regardless of status.
-    "manufacturersForceAutomated" all fighters with the inputted manufacturers will get the 'automated' hull mod
-    "shipsForceAutomated"         all ships ids inputted will get the 'automated' hull mod
-    "shipsForceNotAutomated"      all ships with the inputted ids will -not- get the 'automated' hull mod, regardless of other settings.
+    "permaMods"                     hullmods added to all .ship files, regardless of other settings.
+    "permaMods_ifBaseFighter"       hullmods added to all .ship files that have the 'fighter bays with base fighter' set to to a number that is not zero.
+    "tags"                          tags added to all ship.csv files, regardless of other settings.
+    "forceExclude"                  fighters that will be forcefully -not generated-
+    "ignoreRestrictedStatus"        fighters that will be allowed to generate, even though they would normally be prevented from doing so.
+    "forceAllowSpawns"              fighters that would be allowed to spawn in fleets, even though they normally would be prevented from doing so
+    "forcePreventSpawns"            forcefully prevents fighters from spawning in fleets, regardless of status.
+    "manufacturersForceAutomated"   all fighters with the inputted manufacturers will get the 'automated' hull mod
+    "shipsForceAutomated"           all ships ids inputted will get the 'automated' hull mod
+    "shipsForceNotAutomated"        all ships with the inputted ids will -not- get the 'automated' hull mod, regardless of other settings.
+    "fighterTagsToHullTags"         (if the fighters fighter.csv a giving tag, it will add the giving tag to the hulls.csv)
+    "fighterTagsToHullHints"        if the fighters fighter.csv has a giving tag, the linked hint will be added to its hull hints.
+    "swapHullMods":                 if the hull of the ship has any of the inputed perma mods, it will instead be swaped out for the linked hullmod. set to "" to remove the hullmod.
 overwritable settings:
     these are settings that can be overwritten by other mods, or added together. conditions will be explained in each item.
     "defaultShipData" anything inside of this can be overwriten, every indevidual section of this can be overwriten. as per the 'hull data and variant data information' page.

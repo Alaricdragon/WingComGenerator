@@ -76,13 +76,24 @@ public class Create_shipData implements Runnable{
 
 
         JSONArray array = out.containsKey("builtInMods") ? (JSONArray) out.get("builtInMods") : new JSONArray();
-        ArrayList<String> mods = Settings.permaMods.getListWithLock();
-        for (String b : mods) array.add(b);
+        for (String b : Settings.permaMods.getListWithLock()) array.add(b);
         Settings.permaMods.unlock();
+        if (isWingCommander(settings)){
+            for (String b : Settings.permaMods_ifBaseFighter.getListWithLock()) array.add(b);
+            Settings.permaMods_ifBaseFighter.unlock();
+        }
         out.put("builtInMods",array);
         if (addAuto()) array.add("automated");
         for (String b : settings.hullSettings.perma_hullmods) array.add(b);
-        if (array.contains("no_weapon_flux")) array.remove("no_weapon_flux");
+        for (String b : Settings.swapHullMods.getListWithLock().keySet()){
+            if (array.contains(b)){
+                array.remove(b);
+                String c = Settings.swapHullMods.get(b);
+                if (!c.isBlank())array.add(c);
+            }
+        }
+        Settings.swapHullMods.unlock();
+        //if (array.contains("no_weapon_flux")) array.remove("no_weapon_flux");
         out.put("hullSize","FRIGATE");
         out.put("hullId",getHullID(settings));
         out.put("hullName",getName(settings));
@@ -173,6 +184,9 @@ public class Create_shipData implements Runnable{
     private boolean addFreeAutoTag(){
         return addAuto() && Settings.autoShips_DontCostAutoPoints.get();
     }
+    private boolean isWingCommander(ChosenShipSettings settings){
+        return settings.hullSettings.baseFighters > 0;
+    }
     private void addVariantFile(ChosenShipSettings settings) throws ParseException, IOException {
         /*
         data needed:
@@ -224,7 +238,12 @@ public class Create_shipData implements Runnable{
         //shipCSV.fighter_bays = String.valueOf(settings.hullSettings.baseFighters + settings.hullSettings.emptyFighters);
         //shipCSV.
         String temp = "";
-        int items = Settings.tags.size() + hSettings.tags.size();
+        ArrayList<String> swaps = new ArrayList<>();
+        for (String a : Settings.fighterTagsToHullTags.getListWithLock().keySet()){
+            if (matedFighter.fighter.fighter_csv.tags.contains(a)) swaps.add(Settings.fighterTagsToHullTags.get(a));
+        }
+        Settings.fighterTagsToHullTags.unlock();
+        int items = Settings.tags.size() + hSettings.tags.size() + swaps.size();
         if (!shipCSV.tags.isBlank() && (items != 0 || addFreeAutoTag()))temp+=", ";
         if (addFreeAutoTag()){
             temp += "no_auto_penalty";
@@ -241,17 +260,32 @@ public class Create_shipData implements Runnable{
             items--;
             if (items != 0) temp +=",";
         }
+        for (String d : swaps){
+            temp+=d;
+            items--;
+            if (items != 0) temp +=",";
+        }
         shipCSV.tags = shipCSV.tags+temp;
 
         temp = "";
         if (!shipCSV.hints.isBlank())temp+=", ";
-        items = Settings.hints.size() + hSettings.hints.size();
+        swaps = new ArrayList<>();
+        for (String a : Settings.fighterTagsToHullHints.getListWithLock().keySet()){
+            if (matedFighter.fighter.fighter_csv.tags.contains(a)) swaps.add(Settings.fighterTagsToHullHints.get(a));
+        }
+        Settings.fighterTagsToHullHints.unlock();
+        items = Settings.hints.size() + hSettings.hints.size() + swaps.size();
         for (String d : Settings.hints.getListWithLock()){
             temp+=d;
             items--;
             if (items != 0) temp +=",";
         }
         Settings.hints.unlock();
+        for (String d : swaps){
+            temp+=d;
+            items--;
+            if (items != 0) temp +=",";
+        }
         for (String d : hSettings.hints){
             temp+=d;
             items--;
@@ -273,7 +307,7 @@ public class Create_shipData implements Runnable{
     }
 
     private String getName(ChosenShipSettings settings){
-        return Settings.getName(matedFighter.hull.ship_csv);//NOTE: this needs to be set in addShipFile as well.
+        return Settings.getName(settings,matedFighter.hull.ship_csv);//NOTE: this needs to be set in addShipFile as well.
     }
     private String getHullID(ChosenShipSettings settings){
         return Settings.getHullID(matedFighter.fighter.fighter_csv);

@@ -1,11 +1,12 @@
 how to use this mod:
 1: move this mod into your starsector mods folder
 2: enable all mods you wish to make (wingcom) units out of fighters.
-3: (advanced) go into data/config/WinComGenerator_Settings.json and edit the relevant setting (see the readme there for details.)
-4: (advanced) if you dont want this to relly on armma armada, go into the settings and replace the "permaMods" item with "permaMods":[], you can then edit the mod_info.json to no longer have the dependency
-4: run the WinComGenerator.jar
-5: wait for this to finish.
-6: play starsector.
+3: (optional) go into data/config/WinComGenerator_Settings.json and edit the relevant setting (see the readme there for details.)
+4: (optional) if you dont want this to relly on armma armada, go into the settings and replace the "permaMods" item with "permaMods":[], and "permaMods_ifBaseFighter" item with "permaMods_ifBaseFighter":[] you can then edit the mod_info.json to no longer have the dependency
+5: (optional) if you want to have stickcraft instead of wingcom units, go into data/config/WinComGenerator_Settings.json, and set all instances of 'fighter bays with base fighter' to '0'. this will automaticly
+6: run the WinComGenerator.jar
+7: wait for this to finish.
+8: play starsector. (make sure to enable this mod if you want the wingcom ships to appear.)
 
 features:
 1: generates new hulls for 'wingcom' ship. they are fighters but they are not bound to carriers, acting as ships instead.
