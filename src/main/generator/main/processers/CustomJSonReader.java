@@ -264,7 +264,7 @@ public class CustomJSonReader {
         PrintWriter writer = new PrintWriter(path, StandardCharsets.UTF_8);
 
         //writer.println(json);//transformJsonString(json.toJSONString()));
-        writer.println(transformJsonString(json.toJSONString()));
+        writer.println(json.toJSONString());//transformJsonString(json.toJSONString()));
         writer.close();
     }
     public static String transformJsonString(String string){

@@ -17,7 +17,6 @@ public class StarsectorJsonGetter {
             out = new StarsectorJsonGetter(reader);
             return out.getOutput();
         } catch (IOException e) {
-            System.err.println("(starsector data:) Error reading file: of path: "+path+ "" + e.getMessage());
             return null;
         }
     }
@@ -40,7 +39,6 @@ public class StarsectorJsonGetter {
     public StarsectorJsonGetter(BufferedReader reader) {
         this.reader = reader;
     }
-
     public JSONObject getOutput() throws IOException {
         JSONObject out = new JSONObject();
         currentObject = out;
@@ -66,12 +64,11 @@ public class StarsectorJsonGetter {
         //first, we need to continue untill we find the first {
         String line;
         //boolean shouldBreak;
-        while ((line = reader.readLine()) != null && !done) {
-            for (char a : line.toCharArray()) {
-                //System.out.println("processing :" + a + " with varType: " + varType + ", phase " + phase + ", currentName " + currentName + ", currentVar " + currentVar + ", gettingArray " + getingArray + ", depth " + depth);
+        while ((line = reader.readLine()) != null && !done){
+            for (char a : line.toCharArray()){
                 //shouldBreak = false;
                 if (varType <= 0 && a == '#') break;//if I am in a var, I cant leave untill it is time.
-                switch (phase) {
+                switch (phase){
                     case -1:
                         if (a == '{') phase = 0;
                         break;
@@ -82,14 +79,12 @@ public class StarsectorJsonGetter {
                         processTypeStart(a);
                         break;
                 }
-                //System.out.println("done...?");
                 if (done) return out;
             }
         }
         return out;
     }
-
-    private void processKey(char a) {
+    private void processKey(char a){
         //key can be: the start of a 'key', or the end of a 'type'. I dont know what one.
         //also gets the full name of the next varuble. apparently.
         //if so, maybe I should also get when a new list starts????
@@ -132,35 +127,34 @@ public class StarsectorJsonGetter {
             currentName = "" + a;
             return;
         }
-        switch (varType) {
+        switch (varType){
             case 0:
-                if (a == ' ' || a == '\n' || a == ':' || a == ',' || a == 9) {
+                if (a == ' ' || a == '\n' || a == ':' || a == ',' || a == 9 || a == '}' || a == ']'){
                     //ends the object.
                     phase = 1;
-                } else {
-                    currentName += a;
+                }else{
+                    currentName+=a;
                 }
                 break;
             case 1:
-                if (a == '\'') {
+                if (a == '\''){
                     phase = 1;
-                } else {
-                    currentName += a;
+                }else{
+                    currentName+=a;
                 }
                 break;
             case 2:
-                if (a == '"') {
+                if (a == '"'){
                     phase = 1;
-                } else {
-                    currentName += a;
+                }else{
+                    currentName+=a;
                 }
                 break;
         }
         if (phase == 1) varType = -1;
 
     }
-
-    private void processTypeStart(char a) {
+    private void processTypeStart(char a){
         //this should get the following:
         //1: it should get varubles.
         //2: it should get varuble types (just like get key).
@@ -168,9 +162,7 @@ public class StarsectorJsonGetter {
         //1: get keys.
 
         //
-        //System.out.println("    1");
         if (varType == -1) {
-            //System.out.println("        1.0");
             if ((a == ' ' || a == ':' || a == '\n' || a == ',' || a == 9)) return;
             //start of array data.
             if (a == '{') {
@@ -232,48 +224,69 @@ public class StarsectorJsonGetter {
                 varType = 2;
                 return;
             }
-            currentVar = "" + a;
+            currentVar=""+a;
             varType = 0;
             return;
         }
-        switch (varType) {
+        switch (varType){
             case 0:
-                if (a == ' ' || a == '\n' || a == ':' || a == ',' || a == 9) {
+                if (a == ' ' || a == '\n' || a == ':' || a == ',' || a == 9 || a == '}' || a == ']'){
                     processVar();
-                } else {
-                    currentVar += a;
+                    checkClosingBrackets(a);
+                }else{
+                    currentVar+=a;
                 }
                 break;
             case 1:
-                if (a == '\'') {
+                if (a == '\''){
                     processVar();
-                } else {
-                    currentVar += a;
+                }else{
+                    currentVar+=a;
                 }
                 break;
             case 2:
-                if (a == '"') {
+                if (a == '"'){
                     processVar();
-                } else {
-                    currentVar += a;
+                }else{
+                    currentVar+=a;
                 }
                 break;
         }
     }
-
-    private void processVar() {
+    private void checkClosingBrackets(char a){
+        if (a == ']' || a == '}') {
+            //ends an object.
+            getingArray = false;
+            depth.removeLast();
+            if (depth.size() == 0) {
+                done = true;
+                return;
+            }
+            if (depth.getLast() instanceof JSONObject) {
+                currentObject = (JSONObject) depth.getLast();
+                currentArray = null;
+                phase = 0;//move to jsonObject get key
+            } else {
+                currentObject = null;
+                currentArray = (JSONArray) depth.getLast();
+                getingArray = true;
+                //phase = 1;//move to phase one for repetitive key processing.
+            }
+            return;
+        }
+    }
+    private void processVar(){
         if (!getingArray) phase = 0;
-        if (depth.getLast() instanceof JSONObject) {
-            //System.out.println("            2.0");
+        if (depth.getLast() instanceof JSONObject){
             phase = 0;
-            ((JSONObject) depth.getLast()).put(currentName, currentVar);
-        } else {
-            //System.out.println("            2.1");
+            ((JSONObject)depth.getLast()).put(currentName,currentVar);
+        }else{
             phase = 1;
-            ((JSONArray) depth.getLast()).add(currentVar);
+            ((JSONArray)depth.getLast()).add(currentVar);
         }
         currentVar = "";
         currentName = "";
         varType = -1;
     }
+
 }

@@ -267,7 +267,7 @@ public class Create_shipData implements Runnable{
     private void addShipRoles(ChosenShipSettings settings){
         if (!Settings.forceAllowSpawns.contains(matedFighter.fighter.fighter_csv.id)){
             if (Settings.forcePreventSpawns.contains(matedFighter.fighter.fighter_csv.id)) return;
-            if (!Settings.spawnRestricted.get() && matedFighter.fighter.fighter_csv.tags.contains("no_drop")) return;
+            if (!Settings.spawnRestricted.get() && Settings.isRestrictedMaybe(matedFighter.fighter.fighter_csv)) return;
         }
         Seeker.roles.add(new ShipRoles(getVariantId(settings),settings.variantSettings.spawnGroup,settings.variantSettings.spawnWeight));
     }

@@ -388,8 +388,13 @@ public class Seeker {
             System.out.println("status (triming .ships): "+contoler.getStatus());
             Thread.sleep(1000);
         }
+        String log = "status (triming .ships): completed. trimed "+listSize+" .ships down to "+finalHullJson.size()+". got hull ids as:";
+        for (Object a : contoler.getFinalLists()){
+            HullJson b = (HullJson) a;
+            log += "\n " + b.json.get("hullId");
+        }
+        System.out.println(log);
         finalHullJson.set(contoler.getFinalLists());
-        System.out.println("status (triming .ships): completed. trimed "+listSize+" .ships down to "+finalHullJson.size());
     }
     public static void mateFightersToHullsAndVariants() throws InterruptedException {
         System.out.println("started to pair hull, ship, and variant data...");

@@ -29,9 +29,15 @@ public class OrganizeFighters implements Runnable{
         for (Fighter a : list2){
             String id = a.fighter_csv.id;
             build = true;
-            for (Fighter b : out){
+            for (int c = 0; c < out.size(); c++){
+                Fighter b = out.get(c);
                 //todo: find if lower 'level' hulls go first?
-                if (id.equals(b.fighter_csv.id )&& b.priority > a.priority){
+                if (id.equals(b.fighter_csv.id)){
+                    if (b.priority > a.priority){
+                        //do nothing.
+                    }else{
+                        out.set(c,a);
+                    }
                     build = false;
                     break;
                 }
@@ -51,7 +57,7 @@ public class OrganizeFighters implements Runnable{
                 out.remove(a);
                 continue;
             }
-            if (b.fighter_csv.tags.contains("no_drop") && !Settings.buildRestricted.get()) out.remove(a);
+            if (Settings.isRestrictedMaybe(b.fighter_csv) && !Settings.buildRestricted.get()) out.remove(a);
         }
         //System.out.println("    2");
         excludeList.unlockList(eid);

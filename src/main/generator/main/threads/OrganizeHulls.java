@@ -1,6 +1,7 @@
 package main.threads;
 
 import main.processers.MergeListMaster;
+import main.types.Fighter;
 import main.types.Hull;
 
 import java.util.ArrayList;
@@ -21,9 +22,15 @@ public class OrganizeHulls implements Runnable{
         for (Hull a : list2){
             String id = a.ship_csv.id;
             build = true;
-            for (Hull b : out){
+            for (int c = 0; c < out.size(); c++){
+                Hull b = out.get(c);
                 //todo: find if lower 'level' hulls go first?
-                if (id.equals(b.ship_csv.id )&& b.priority > a.priority){
+                if (id.equals(b.ship_csv.id)){
+                    if (b.priority > a.priority){
+                        //do nothing.
+                    }else{
+                        out.set(c,a);
+                    }
                     build = false;
                     break;
                 }

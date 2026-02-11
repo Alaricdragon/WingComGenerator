@@ -62,4 +62,9 @@ public class Settings {
         }
         return "WinComGeneratorV_"+fighter;
     }
+    public static boolean isRestrictedMaybe(Bean_Fighter fighter){
+        if (fighter.tags.contains("no_drop") && fighter.tags.contains("no_sell")) return true;
+        if (fighter.tags.contains("restricted")) return true;
+        return false;
+    }
 }

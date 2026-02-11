@@ -31,6 +31,8 @@ public class OrganizeHullJsonRejects implements Runnable{
                 for (int c = 1; c < list2.size(); c++){
                     //todo: in here... I would need to.. to... to... why? whyasdjasjda
                     //      I would need to get the 'main' item, and have it override any items of a lower priority. but not ones of a greater priority. its a big fucking mess. I dont want to deal with it at all....
+                    //      this is compleatly rediculus. I have to compleatly reinvent the weel just to get this working...
+                    //
                     HullJson active2 = list2.get(c);
                     if (active.priority > active2.priority){
                         OrganizeHullJsons.attemptMerging(active2.json,active.json);

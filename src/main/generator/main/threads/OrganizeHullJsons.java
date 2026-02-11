@@ -29,6 +29,7 @@ public class OrganizeHullJsons implements Runnable{
             for (HullJson b : out){
                 //todo: find if lower 'level' hulls go first?
                 if (id.equals(b.json.get("hullId").toString())){
+                    System.out.println("found identical hull jsons of "+id);
                     if (b.priority > a.priority){
                         b.json = attemptMerging(a.json,b.json);
                     }else{
