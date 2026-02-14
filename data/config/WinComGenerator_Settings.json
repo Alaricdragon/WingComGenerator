@@ -4,7 +4,7 @@
   "spawnRestricted": false,
   "permaMods": ["strikeCraft"],
   "permaMods_ifBaseFighter": ["armaa_wingCommander"],
-  "tags": ["fake_fighter"],
+  "tags": ["fake_fighter","wingcomgenerator_bp"],
   "forceExclude": [
     "armaa_kouto_wing",
     "armaa_valkenx_wing",
@@ -118,7 +118,7 @@
         "spawnGroup":"combatSmall",
         "spawnWeight": 1,
         ".variant": {
-          "displayName": "base",
+          "displayName": "Armored",
           "fluxCapacitors": 10,
           "fluxVents": 10,
           "goalVariant": true,
@@ -134,14 +134,17 @@
       #"phased": {},
       "undefended": {
         ".variant": {
-          "displayName": "base",
+          "displayName": "Shielded",
           "fluxCapacitors": 8,
           "fluxVents": 7,
           "goalVariant": true,
           "hullMods": [
             "heavyarmor",
             "frontshield"
-          ]
+          ],
+          "permaMods": [],
+          "sMods": [],
+          "weaponGroups": []
         }
       },
       #"other": {}

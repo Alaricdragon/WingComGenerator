@@ -1,3 +1,7 @@
+note: this requires java 25 or higher. sorry about this.
+if you click the WingComGenerator.jar and nothing happens, you need to update your java version.
+Hopefully I can get this working with the starsector jar or something someday.
+
 how to use this mod:
 1: move this mod into your starsector mods folder
 2: enable all mods you wish to make (wingcom) units out of fighters.

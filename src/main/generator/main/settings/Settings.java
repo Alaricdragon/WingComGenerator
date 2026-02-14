@@ -56,16 +56,16 @@ public class Settings {
         return getHullID(fighter.id);
     }
     public static String getHullID(String fighterID){
-        return "WinComGeneratorH_"+fighterID;
+        return "WinComGeneratorH_"+fighterID+"_n";
     }
     public static String getVariantId(Bean_Fighter fighter){
         return getVariantId(fighter.id);
     }
     public static String getVariantId(String fighter){
-        if (fighter.endsWith("_wing")){
-            fighter+="_not";
-        }
-        return "WinComGeneratorV_"+fighter;
+        //if (fighter.endsWith("_wing")){
+        //    fighter+="_not";
+        //}
+        return "WinComGeneratorV_"+fighter+"_n";
     }
     public static boolean isRestrictedMaybe(Bean_Fighter fighter){
         if (fighter.tags.contains("no_drop") && fighter.tags.contains("no_sell")) return true;

@@ -26,8 +26,13 @@ public class ChosenShipSettings {
     private void selectVariantSettings(ShipGroupSettings d, String type,String def){
         variantSettings = new VariantSettings();
         if (d == null || d.variantSettings == null) return;
-        if (d.variantSettings.containsKey("base") && d.variantSettings.get("base").containsKey("base")){
-            variantSettings = new VariantSettings(variantSettings,d.variantSettings.get("base").get("base"));
+        if (d.variantSettings.containsKey("base")){
+            if (d.variantSettings.get("base").containsKey("base")){
+                variantSettings = new VariantSettings(variantSettings,d.variantSettings.get("base").get("base"));
+            }
+            if (d.variantSettings.get("base").containsKey(def)){
+                variantSettings = new VariantSettings(variantSettings,d.variantSettings.get("base").get(def));
+            }
         }
         if(d.variantSettings.containsKey(type)){
             if (d.variantSettings.get(type).containsKey("base")){
@@ -45,8 +50,13 @@ public class ChosenShipSettings {
 
         hullSettings = new HullSettings();
         if (d == null || d.hullSettings == null) return;
-        if (d.hullSettings.containsKey("base") && d.hullSettings.get("base").containsKey("base")){
-            hullSettings = new HullSettings(hullSettings,d.hullSettings.get("base").get("base"));
+        if (d.hullSettings.containsKey("base")){
+            if (d.hullSettings.get("base").containsKey("base")){
+                hullSettings = new HullSettings(hullSettings, d.hullSettings.get("base").get("base"));
+            }
+            if (d.hullSettings.get("base").containsKey(def)){
+                hullSettings = new HullSettings(hullSettings, d.hullSettings.get("base").get(def));
+            }
         }
         if(d.hullSettings.containsKey(type)){
             if (d.hullSettings.get(type).containsKey("base")){
@@ -82,6 +92,7 @@ public class ChosenShipSettings {
             case "PHASE"-> "phased";
             default -> "other";
         };
+        //System.out.println("defensive type data: id, type: "+mate.fighter.fighter_csv.id+", "+def2);
         return def2;
     }
 }
