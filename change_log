@@ -1,5 +1,5 @@
 V0.0.4:
-    fixed broken detection on some diffrent hull and variant types in the WingComGenerator.version
-    fixed crash when open cargo well a wingcom blueprint is in it. (NOT save combatable. remember to run the generator when starting a new save.)
+    fixed broken detection on some different hull and variant types in the WingComGenerator.version
+    fixed crash when opening cargo when a wingcom blueprint is in it. (NOT save combatable. remember to run the generator when starting a new save.)
     made variant names different from each other.
     added a tag to all generated wingcom units 'wingcomgenerator_bp'
