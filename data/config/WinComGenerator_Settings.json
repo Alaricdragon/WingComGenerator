@@ -27,7 +27,9 @@
   "shipsForceNotAutomated": [],
   "fighterTagsToHullTags": {
     "restricted": "restricted",
-    "no_sell": "no_sell"
+    "no_sell": "no_sell",
+    "codex_unlockable": "codex_unlockable",
+    "no_dealer": "no_dealer"
   },
   "fighterTagsToHullHints": {
     "no_drop": "UNBOARDABLE"
