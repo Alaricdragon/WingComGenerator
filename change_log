@@ -1,6 +1,10 @@
-V0.0.5:
+V0.0.6:
     fixed broken detection on some different hull and variant types in the WingComGenerator.version
     fixed crash when opening cargo when a wingcom blueprint is in it. (NOT save combatable. remember to run the generator when starting a new save.)
     made variant names different from each other.
     added a tag to all generated wingcom units 'wingcomgenerator_bp'
     added some more fighter - hull tag conversions.
+    made it so generated wingcom ships are part of the same blueprint packs as the fighter they are based on
+    added the following settings:
+        forceNotBlueprintTag
+        tryToAddToBlueprintPacks

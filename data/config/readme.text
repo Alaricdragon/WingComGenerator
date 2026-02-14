@@ -2,6 +2,7 @@ base settings:
     base settings are settings that -can only be modified form this file- they are:
     "buildRestricted" (allows fighters yuo would never see to be generated, but not built in fleets)
     "spawnRestricted" (allows fighters you would never see to be built in fleets -if they are generated-)
+    "tryToAddToBlueprintPacks" (if set to true, any fighter with a tag that ends in _bp will have that tag moved onto the its hull. this is for allowing the wingcom units to be part of blueprint packs.)
     "automateDroneFighters" (if set to true, fighters with the auto_fighter tag will be considerd 'automated ships')
     "autoShips_DontCostAutoPoints" (if set to true, fighters that are set to be 'auto' ships dont cost automated ship points.)
 addable settings:
@@ -17,6 +18,7 @@ addable settings:
     "manufacturersForceAutomated"   all fighters with the inputted manufacturers will get the 'automated' hull mod
     "shipsForceAutomated"           all ships ids inputted will get the 'automated' hull mod
     "shipsForceNotAutomated"        all ships with the inputted ids will -not- get the 'automated' hull mod, regardless of other settings.
+    "forceNotBlueprintTag"          any tag instead of this list will not be considered a blueprint, regardless of if it ends with "_bp" or not.
     "fighterTagsToHullTags"         (if the fighters fighter.csv a giving tag, it will add the giving tag to the hulls.csv)
     "fighterTagsToHullHints"        if the fighters fighter.csv has a giving tag, the linked hint will be added to its hull hints.
     "swapHullMods":                 if the hull of the ship has any of the inputed perma mods, it will instead be swaped out for the linked hullmod. set to "" to remove the hullmod.

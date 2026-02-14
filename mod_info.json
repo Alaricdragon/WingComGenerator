@@ -2,7 +2,7 @@
 	"id":"wingcom_generator",
 	"name":"Wingcom Generator",
 	"author":"alaricdragon",
-	"version":"0.0.5",
+	"version":"0.0.6",
 	"description":"needs to be active for generated wingcom units to appear",
 	"gameVersion":"0.98a",
 	#"jars":["CaptainsLog.jar"],

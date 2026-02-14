@@ -239,10 +239,23 @@ public class Create_shipData implements Runnable{
         //shipCSV.
         String temp = "";
         ArrayList<String> swaps = new ArrayList<>();
+        String[] tempS = matedFighter.fighter.fighter_csv.tags.split(",");
+        ArrayList<String> fighterTagsTemp = new ArrayList<>();
+        for (int a = 0; a < tempS.length; a++) fighterTagsTemp.add(tempS[a].trim());
         for (String a : Settings.fighterTagsToHullTags.getListWithLock().keySet()){
-            if (matedFighter.fighter.fighter_csv.tags.contains(a)) swaps.add(Settings.fighterTagsToHullTags.get(a));
+            if (fighterTagsTemp.contains(a)) swaps.add(Settings.fighterTagsToHullTags.get(a));
         }
         Settings.fighterTagsToHullTags.unlock();
+        if (Settings.tryToAddToBlueprintPacks.get()){
+            for (String a : fighterTagsTemp){
+                String b = a.trim();
+                //System.out.println("got tag as: "+b);
+                if (b.endsWith("_bp") && !Settings.forceNotBlueprintTag.contains(b)){
+                    //System.out.println("got blueprint tag as: "+b);
+                    swaps.add(b);
+                }
+            }
+        }
         int items = Settings.tags.size() + hSettings.tags.size() + swaps.size();
         if (!shipCSV.tags.isBlank() && (items != 0 || addFreeAutoTag()))temp+=", ";
         if (addFreeAutoTag()){

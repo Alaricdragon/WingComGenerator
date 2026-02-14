@@ -2,6 +2,9 @@
 
   "buildRestricted": false,
   "spawnRestricted": false,
+  "tryToAddToBlueprintPacks": true,
+  "automateDroneFighters": true,
+  "autoShips_DontCostAutoPoints": false,
   "permaMods": ["strikeCraft"],
   "permaMods_ifBaseFighter": ["armaa_wingCommander"],
   "tags": ["fake_fighter","wingcomgenerator_bp"],
@@ -25,11 +28,14 @@
   "manufacturersForceAutomated": [],#"Remnant","Explorarium","Threat"],
   "shipsForceAutomated": [],
   "shipsForceNotAutomated": [],
+  "forceNotBlueprintTag": [],
   "fighterTagsToHullTags": {
     "restricted": "restricted",
     "no_sell": "no_sell",
     "codex_unlockable": "codex_unlockable",
-    "no_dealer": "no_dealer"
+    "no_dealer": "no_dealer",
+    "remnant": "remnant",
+    "derelict": "derelict"
   },
   "fighterTagsToHullHints": {
     "no_drop": "UNBOARDABLE"
@@ -38,8 +44,6 @@
     "no_weapon_flux": "",#lets (wingcom) units have flux management.
     "rat_exogrid": ""#RAT combatability
   },
-  "automateDroneFighters": true,
-  "autoShips_DontCostAutoPoints": false,
   "defaultShipData":{
     "hull_data": {
       "base": {

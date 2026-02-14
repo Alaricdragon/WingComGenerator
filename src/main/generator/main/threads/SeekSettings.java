@@ -204,6 +204,10 @@ public class SeekSettings implements Runnable{
             JSONObject json2 = (JSONObject) json.get("fighterTagsToHullHints");
             for (Object a : json2.keySet()) Settings.fighterTagsToHullHints.put(a.toString(),json2.get(a.toString()).toString());
         }
+        if (json.containsKey("forceNotBlueprintTag")){
+            JSONArray array = (JSONArray) json.get("forceNotBlueprintTag");
+            for (String a : CustomJSonReader.getItemsInArray(array)) Settings.forceNotBlueprintTag.add(a);
+        }
 
         processDefaultShipData(json);
 

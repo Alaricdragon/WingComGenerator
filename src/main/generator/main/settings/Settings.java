@@ -22,6 +22,7 @@ public class Settings {
     public static final LockedVariable<Boolean> spawnRestricted = new LockedVariable<>(false,false);
     public static final LockedVariable<Boolean> automateDroneFighters = new LockedVariable<>(false,false);
     public static final LockedVariable<Boolean> autoShips_DontCostAutoPoints = new LockedVariable<>(false,false);
+    public static final LockedVariable<Boolean> tryToAddToBlueprintPacks = new LockedVariable<>(false,false);
 
     /// mods to always be added to every hull file, regardless of context.
     public static final LockedList<String> permaMods = new LockedList<>(false);
@@ -35,6 +36,7 @@ public class Settings {
     public static final LockedList<String> manufacturersForceAutomated = new LockedList<>(false);
     public static final LockedList<String> shipsForceAutomated = new LockedList<>(false);
     public static final LockedList<String> shipsForceNotAutomated = new LockedList<>(false);
+    public static final LockedList<String> forceNotBlueprintTag = new LockedList<>(false);
 
     public static final LockedHashMap<String,String> swapHullMods = new LockedHashMap<>(false);
     public static final LockedHashMap<String,String> fighterTagsToHullTags = new LockedHashMap<>(false);

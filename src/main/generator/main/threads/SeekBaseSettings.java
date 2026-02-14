@@ -28,6 +28,9 @@ public class SeekBaseSettings extends SeekSettings{
         if (json.containsKey("autoShips_DontCostAutoPoints")){
             Settings.autoShips_DontCostAutoPoints.set(Boolean.parseBoolean(json.get("autoShips_DontCostAutoPoints").toString()));
         }
+        if (json.containsKey("tryToAddToBlueprintPacks")){
+            Settings.tryToAddToBlueprintPacks.set(Boolean.parseBoolean(json.get("tryToAddToBlueprintPacks").toString()));
+        }
     }
 
     @Override
